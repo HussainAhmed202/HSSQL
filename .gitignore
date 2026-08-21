@@ -13,3 +13,9 @@ data/*
 .idea/
 *.swp
 .DS_Store
+
+.exe
+.o
+
+# Code Runner temporary files
+temporaryCodeunnerFile.c
