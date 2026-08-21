@@ -1,4 +1,4 @@
-# minidb
+# HSSQL
 
 A tiny relational database engine, written from scratch in C.
 
@@ -31,14 +31,14 @@ Requires `gcc` and `make`.
 make run
 ```
 
-This builds the `minidb` binary and drops you into a REPL. Type SQL
+This builds the `HSSQL` binary and drops you into a REPL. Type SQL
 statements ending in `;`, or `.exit` to quit.
 
 You can also run a `.sql` file non-interactively:
 
 ```bash
 make
-./minidb path/to/script.sql
+./HSSQL path/to/script.sql
 ```
 
 ## Project structure
@@ -87,6 +87,7 @@ These aren't oversights, they're the starting point. See
 
 Working in short daily sessions means picking up context fast
 matters more than usual. That's the reasoning behind:
+
 - Small, single-purpose files (`table.c` only knows about
   reading/writing rows, `catalog.c` only knows about schemas)
 - A [devlog](docs/DEVLOG.md) so "what was I doing yesterday" has an answer
