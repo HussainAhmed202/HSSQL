@@ -1,0 +1,15 @@
+# compiled binary
+minidb
+
+# object files
+*.o
+
+# database files generated at runtime (schema + table data)
+data/*
+!data/.gitkeep
+
+# editor/OS cruft
+.vscode/
+.idea/
+*.swp
+.DS_Store
