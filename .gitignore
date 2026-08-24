@@ -14,8 +14,8 @@ data/*
 *.swp
 .DS_Store
 
-.exe
-.o
+*.exe
+*.o
 
 # Code Runner temporary files
-temporaryCodeunnerFile.c
+*/temporaryCodeunnerFile.c

@@ -16,6 +16,7 @@ int main(void)
         if (result == NULL)
         {
             // EOF signal sent
+            printf("Goodbye\n");
             should_exit = true;
             continue; // loop again
         }
