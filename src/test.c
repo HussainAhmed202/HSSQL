@@ -3,7 +3,7 @@
 
 int main()
 {
-    char string[] = "SELECT (1+2) FROM DUAL;";
+    char string[] = "CREATE TABLE CUSTOMER(INT a1, BOOL Flag)";
     char token[10][10] = {0}; // stores one key word at a time
     int i = 0, j = 0, k = 0;  // i is the token#, j is the index of string,  k is the column#
 
@@ -11,14 +11,14 @@ int main()
 
     for (j = 0; j < strlen(string); j++)
     {
-        printf("i=%d j=%d k=%d string[%d]=%c\n", i, j, k, j, string[j]);
+        // printf("i=%d j=%d k=%d string[%d]=%c\n", i, j, k, j, string[j]);
         // intially i = 0; once ' ' encountered i++
         if (string[j] == ' ')
         {
             i++;   // new word so next token
             k = 0; // marks the 0th index of the new token
         }
-        else if (string[j] == '=' || string[j] == '+' || string[j] == '-' || string[j] == '/' || string[j] == '*' || string[j] == '(' || string[j] == ')' || string[j] == ';')
+        else if (string[j] == '=' || string[j] == '+' || string[j] == '-' || string[j] == '/' || string[j] == '*' || string[j] == '(' || string[j] == ')' || string[j] == ';' || string[j] == ',')
         {
             // Other special characters like =+-/*();
             if (k == 0)
