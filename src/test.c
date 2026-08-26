@@ -3,7 +3,7 @@
 
 int main()
 {
-    char string[] = "CREATE TABLE CUSTOMER(INT a1, BOOL Flag)";
+    char string[] = "CREATE TABLE CUST(INT a1, BOOL flag)";
     char token[10][10] = {0}; // stores one key word at a time
     int i = 0, j = 0, k = 0;  // i is the token#, j is the index of string,  k is the column#
 
@@ -11,36 +11,59 @@ int main()
 
     for (j = 0; j < strlen(string); j++)
     {
-        // printf("i=%d j=%d k=%d string[%d]=%c\n", i, j, k, j, string[j]);
+        printf("i=%d j=%d k=%d string[%d]=%c\n", i, j, k, j, string[j]);
         // intially i = 0; once ' ' encountered i++
-        if (string[j] == ' ')
+        if (string[j] == ' ' && k > 0)
         {
+            // string = "SELECT   *"
+            // i = 0 j = 0 k = 0 string[0]→ token[0][0] = S
+            // i = 0 j = 1 k = 1 string[1]→ token[0][1] = E
+            // i = 0 j = 2 k = 2 string[2]→ token[0][2] = L
+            // i = 0 j = 3 k = 3 string[3]→ token[0][3] = E
+            // i = 0 j = 4 k = 4 string[4]→ token[0][4] = C
+            // i = 0 j = 5 k = 5 string[5]→ token[0][4] = T
+            // i = 0 j = 6 k = 0 → space. reset k
+            // i = 1 j = 7 k = 0 → space → no change. Check Note
+
+            // Note:: Since k=0; Space was encountered on previous iteration
+            // No text was being parsed i.e. we are between tokens.
+
             i++;   // new word so next token
             k = 0; // marks the 0th index of the new token
         }
-        else if (string[j] == '=' || string[j] == '+' || string[j] == '-' || string[j] == '/' || string[j] == '*' || string[j] == '(' || string[j] == ')' || string[j] == ';' || string[j] == ',')
+        else if ((
+                     string[j] == '=' || string[j] == '+' || string[j] == '-' || string[j] == '/' || string[j] == '*' || string[j] == '(' || string[j] == ')' || string[j] == ';' || string[j] == ',') &&
+                 k > 0)
         {
-            // Other special characters like =+-/*();
-            if (k == 0)
-            {
-                // after space encountered, i incremented and k reset already
-                token[i][k] = string[j];
-                /// special characters stored as separate token
-                i++;
-                k = 0;
-            }
-            else
-            {
-                // special character encountered after a text character
-                /// special characters stored as separate token
-                i++;
-                k = 0;
-                token[i][k] = string[j];
-                i++;
-                k = 0;
-            }
-        }
+            // i = 2 j = 8 k = 0 string[8] → token[2][0] = 1
+            // i = 3 j = 9 k = 0 string[9] → token[3][0] = +
 
+            // we were parsing a word. Then encountered a special char.
+
+            // finalize the word first. Then the special char
+            i++;
+            k = 0;
+
+            // next token is the special char
+            token[i][k] = string[j];
+
+            // move to the next token
+            i++;
+        }
+        else if ((
+                     string[j] == '=' || string[j] == '+' || string[j] == '-' || string[j] == '/' || string[j] == '*' || string[j] == '(' || string[j] == ')' || string[j] == ';' || string[j] == ',') &&
+                 k == 0)
+        {
+            // i = 1 j = 6 k = 0 → space → reset k
+            // i = 1 j = 7 k = 0 string[7] → token[1][0] = (
+
+            // we encountered space in prev iteration.
+            // already i++; k reset k= 0;
+            token[i][k] = string[j];
+
+            // move to the next token
+            i++;
+        }
         else
         {
             // i = 0 j = 0 k = 0 string[0]→ token[0][0] = S
