@@ -1,19 +1,10 @@
 # Devlog
 
-Short entries, one per work session. Doesn't need to be polished —
-the point is "what did I do, what's next" so picking the project back
-up tomorrow takes 30 seconds, not 10 minutes.
+Short entries, one per work session. The point is "what did I do, what's next" so picking the project back up tomorrow takes 30 seconds, not 10 minutes.
 
-Template for a new entry:
+# 2026-08-31
 
-```
-## YYYY-MM-DD
-**Did:** ...
-**Learned:** ...
-**Next:** ...
-```
-
----
+**Did:**
 
 # 2026-08-26
 
