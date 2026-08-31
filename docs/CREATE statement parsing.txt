@@ -1,0 +1,30 @@
+CREATE TABLE users  (id INT, name TEXT);
+
+The tokenizer breaks it down into
+token = [
+    ["C","R","E","A","T",E,0,0,0]
+    ["T","A","B","L","E",0,0,0,0]
+    ["u","s","e",r,s,0,0,0,0,0,0]
+    ["(",0,0,0,0,0,0,0,0,0,0,0,0]
+    ["i","d","0",0,0,0,0,0,0,0,0]
+    ["I","N","T",0,0,0,0,0,0,0,0]
+    [",",0,0,0,0,0,0,0,0,0,0,0,0]
+    ["n","a","m","e",0,0,0,0,0,0]
+    ["T","E","X","T",0,0,0,0,0,0]
+    [")",0,0,0,0,0,0,0,0,0,0,0,0]
+]
+
+
+At index [0]CREATE word expected 
+At index [1]TABLE word expected 
+At index [2]users name of the table being created
+At index [3]( - opening bracket expected
+
+Here we need to loop till ")" is encountered
+    [4]id  
+    [5]INT  
+[6],   -- Note how comma separates the column definition.
+    [7]name  
+    [8]TEXT  
+[9])
+
