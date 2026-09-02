@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#define MAX_COLUMNS 10
 
 typedef struct
 {
@@ -24,10 +25,9 @@ int main()
         ")",
     };
 
-    const int MAX_COLUMNS = 5;
     int num_columns = 0;
     char table_name[35] = {0};
-    Column column[MAX_COLUMNS];
+    Column column[MAX_COLUMNS] = {0};
 
     int j = 0; // used to track which column array index to populate;
     int k = 0; // for struct field tracking; k=0 populate col_name; k=1 populate col_type
@@ -52,7 +52,7 @@ int main()
     }
 
     // looping inside the (...) block. Pick each column name and its type that is being defined in the CREATE statement
-    for (size_t i = 4; i < token_count; i++)
+    for (size_t i = 4; i < (size_t)token_count; i++)
     // starting after opening bracket - [0]CREATE [1]TABLE [2]<table-name> [3](
     {
         if (strcmp(token[i], ")") == 0)
@@ -77,10 +77,19 @@ int main()
         {
             k = 0;
             j++;
+            num_columns++; // a column was completely defined [name type]
         }
     }
 
-    for (size_t i = 0; i < MAX_COLUMNS; i++)
+    // at k =2 comma is encountered. This is reset. For the last condition no comma encountered
+    if (k == 2)
+    {
+        num_columns++; // a column was completely defined prior to closure [name type])
+    }
+
+    printf("Total number of columns %d\n", num_columns);
+
+    for (size_t i = 0; i < (size_t)num_columns; i++)
     {
         printf("Column[%zu].col_name -> %s\n", i, column[i].col_name);
         printf("Column[%zu].col_type -> %s\n", i, column[i].col_type);
