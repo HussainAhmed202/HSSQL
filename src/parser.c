@@ -2,11 +2,21 @@
 #include <string.h>
 #define MAX_COLUMNS 10
 
+// maintains the column definition i.e. its name and type
 typedef struct
 {
+    // in future:: also add contraints member
     char col_name[100];
     char col_type[50];
 } Column;
+
+// maintains the table definition
+typedef struct
+{
+    char table_name[35];
+    Column columns[10];
+    int num_columns;
+} Table;
 
 int main()
 {
@@ -26,8 +36,10 @@ int main()
     };
 
     int num_columns = 0;
+    int num_tables = 0;
     char table_name[35] = {0};
-    Column column[MAX_COLUMNS] = {0};
+    Column column[MAX_COLUMNS] = {0}; // holds all information for a command on one table
+    Table table[5] = {0};             // holds information for all the tables in the query
 
     int j = 0; // used to track which column array index to populate;
     int k = 0; // for struct field tracking; k=0 populate col_name; k=1 populate col_type
@@ -87,12 +99,17 @@ int main()
         num_columns++; // a column was completely defined prior to closure [name type])
     }
 
+    printf("Table name: %s\n", table_name);
     printf("Total number of columns %d\n", num_columns);
 
+    strcpy(table[0].table_name, table_name);
+    table[0].num_columns = num_columns;
     for (size_t i = 0; i < (size_t)num_columns; i++)
     {
         printf("Column[%zu].col_name -> %s\n", i, column[i].col_name);
         printf("Column[%zu].col_type -> %s\n", i, column[i].col_type);
+        strcpy(table[0].columns[i].col_name, column[i].col_name);
+        strcpy(table[0].columns[i].col_type, column[i].col_type);
     }
 
     return 0;
