@@ -22,8 +22,20 @@ At index [3]( - opening bracket expected
 
 Here we need to loop till ")" is encountered
     [4]id  
-    [5]INT  
-[6],   -- Note how comma separates the column definition.
+    [5]INT 
+[6],   -- Note how comma separates the column definition. 0
     [7]name  
     [8]TEXT  
 [9])
+
+For the above scenario. column[] is an array of a struct Column which takes a col_name, col_type 
+i=0;k=0;  Column[0] = {}
+First iteration at i = 4 - Start after opening bracket encountered
+i = 4 j = 0 k = 0 token[4] = id  column[0] = {col_name -> id} 
+i = 5 j = 0 k = 1 token[5] = INT column[0] = {col_name -> id, col_type -> INT} 
+i = 6 token[6] = , 
+j++  k = 0
+i = 7  j = 1 k = 0 token[7] = name column[1] = {col_name -> name}
+i = 8  j = 1 k = 1 token[8] = TEXT column[1] = {col_name -> name, col_type -> TEXT}
+i = 9 token[9] = ) 
+loop break

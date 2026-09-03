@@ -2,6 +2,11 @@
 
 Short entries, one per work session. The point is "what did I do, what's next" so picking the project back up tomorrow takes 30 seconds, not 10 minutes.
 
+# 2026-09-04
+
+**Did:** Refactored tokenizer.c file - Now standalone function that can be called by including its declaration defined in the header file. This tokenizer function is called in the main.c file. The main.c file has the REPL. It now takes in the user input, and prints out the tokens.
+**Learned** Header files - these contain the function declarations or prototypes of a module. This allows other files to call and use these functions without needing to know or implement them. Header files mask the implementation details and act kind of like an API.
+
 # 2026-08-31
 
 **Did:** Created a parser that takes the tokens array that has a CREATE DDL command. It picks the columns being defined and their datatypes and stores it in an array of struct.
