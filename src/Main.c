@@ -2,9 +2,11 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include "tokenizer.h"
 int main(void)
 {
-    char user_input[15] = {0}; // Limiting user input to 100 characters. Intialize empty array with 100 zeros
+    char user_input[100] = {0}; // Limiting user input to 100 characters. Intialize empty array with 100 zeros
+    char token[10][10] = {0};
     bool should_exit = false;
     printf("Welcome to HSSQL\n");
 
@@ -42,7 +44,17 @@ int main(void)
         }
         else
         {
-            printf("%s \n", user_input);
+            int token_count = tokenizer(token, user_input, (int)strlen(user_input));
+            // printf("Total number of tokens: %d\n", token_count);
+            for (int i = 0; i < token_count; i++)
+            {
+                printf("Token%d = ", i);
+                for (int j = 0; j < 10; j++)
+                {
+                    printf("%c", token[i][j]);
+                }
+                printf("\n");
+            }
         }
     }
     return 0;
