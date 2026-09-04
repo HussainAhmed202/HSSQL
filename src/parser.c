@@ -16,11 +16,11 @@ typedef struct
     char table_name[35];
     Column columns[10];
     int num_columns;
-} Query;
+} TableSchema;
 
-int create_statement_parser(char tokens[][20], int num_of_tokens, Query *query)
+int create_statement_parser(char tokens[][20], int num_of_tokens, TableSchema *table)
 {
-    query->num_columns = 0;
+    table->num_columns = 0;
     int column_index = 0;
     int column_attribute_index = 0;
 
@@ -36,7 +36,7 @@ int create_statement_parser(char tokens[][20], int num_of_tokens, Query *query)
         return -1;
     }
 
-    strcpy(query->table_name, tokens[2]); // add check to make sure table name is valid
+    strcpy(table->table_name, tokens[2]); // add check to make sure table name is valid
 
     if (strcasecmp(tokens[3], "(") != 0)
     {
@@ -53,7 +53,7 @@ int create_statement_parser(char tokens[][20], int num_of_tokens, Query *query)
             if (column_attribute_index == 2)
             {
                 // a column definition was completed before
-                query->num_columns++; // a column was completely defined prior to closure [name type])
+                table->num_columns++; // a column was completely defined prior to closure [name type])
                 break;
             }
 
@@ -63,12 +63,12 @@ int create_statement_parser(char tokens[][20], int num_of_tokens, Query *query)
 
         if (column_attribute_index == 0) // populate the column_name member of the struct
         {
-            strcpy(query->columns[column_index].col_name, tokens[i]);
+            strcpy(table->columns[column_index].col_name, tokens[i]);
             column_attribute_index++; // first struct member populated. Now the second will be populated
         }
         else if (column_attribute_index == 1) // populate the column_type member of the struct
         {
-            strcpy(query->columns[column_index].col_type, tokens[i]);
+            strcpy(table->columns[column_index].col_type, tokens[i]);
             column_attribute_index++; // second struct member populated. Now comma expected. Move to next struct in the array
         }
         else if (column_attribute_index == 2 && strcasecmp(tokens[i], ",") == 0)
@@ -76,7 +76,7 @@ int create_statement_parser(char tokens[][20], int num_of_tokens, Query *query)
             // comma encountered after column definition
             column_attribute_index = 0;
             column_index++;       // moving to new column
-            query->num_columns++; // a column was completely defined [name type]
+            table->num_columns++; // a column was completely defined [name type]
         }
         else
         {

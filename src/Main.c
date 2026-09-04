@@ -9,7 +9,7 @@ int main(void)
 {
     char user_input[100] = {0}; // Limiting user input to 100 characters. Intialize empty array with 100 zeros
     char token[10][20] = {0};
-    Query query; // defined in the parser.h file
+    TableSchema table; // defined in the parser.h file
     bool should_exit = false;
     printf("Welcome to HSSQL\n");
 
@@ -58,15 +58,15 @@ int main(void)
             //     }
             //     printf("\n");
             // }
-            if (create_statement_parser(token, token_count, &query) == 0)
+            if (create_statement_parser(token, token_count, &table) == 0)
             {
-                printf("Table name: %s\n", query.table_name);
-                printf("Total number of columns %d\n", query.num_columns);
+                printf("Table name: %s\n", table.table_name);
+                printf("Total number of columns %d\n", table.num_columns);
 
-                for (int i = 0; i < query.num_columns; i++)
+                for (int i = 0; i < table.num_columns; i++)
                 {
-                    printf("Column[%zu].col_name -> %s\n", i, query.columns[i].col_name);
-                    printf("Column[%zu].col_type -> %s\n", i, query.columns[i].col_type);
+                    printf("Column[%zu].col_name -> %s\n", i, table.columns[i].col_name);
+                    printf("Column[%zu].col_type -> %s\n", i, table.columns[i].col_type);
                 }
             }
             else
