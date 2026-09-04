@@ -3,10 +3,13 @@
 #include <stdbool.h>
 
 #include "tokenizer.h"
+#include "parser.h"
+
 int main(void)
 {
     char user_input[100] = {0}; // Limiting user input to 100 characters. Intialize empty array with 100 zeros
-    char token[10][10] = {0};
+    char token[10][20] = {0};
+    Query query; // defined in the parser.h file
     bool should_exit = false;
     printf("Welcome to HSSQL\n");
 
@@ -46,14 +49,29 @@ int main(void)
         {
             int token_count = tokenizer(token, user_input, (int)strlen(user_input));
             // printf("Total number of tokens: %d\n", token_count);
-            for (int i = 0; i < token_count; i++)
+            // for (int i = 0; i < token_count; i++)
+            // {
+            //     printf("Token%d = ", i);
+            //     for (int j = 0; j < 10; j++)
+            //     {
+            //         printf("%c", token[i][j]);
+            //     }
+            //     printf("\n");
+            // }
+            if (create_statement_parser(token, token_count, &query) == 0)
             {
-                printf("Token%d = ", i);
-                for (int j = 0; j < 10; j++)
+                printf("Table name: %s\n", query.table_name);
+                printf("Total number of columns %d\n", query.num_columns);
+
+                for (int i = 0; i < query.num_columns; i++)
                 {
-                    printf("%c", token[i][j]);
+                    printf("Column[%zu].col_name -> %s\n", i, query.columns[i].col_name);
+                    printf("Column[%zu].col_type -> %s\n", i, query.columns[i].col_type);
                 }
-                printf("\n");
+            }
+            else
+            {
+                printf("Something bad happened\n");
             }
         }
     }
