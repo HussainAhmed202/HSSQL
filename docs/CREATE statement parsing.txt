@@ -39,3 +39,43 @@ i = 7  j = 1 k = 0 token[7] = name column[1] = {col_name -> name}
 i = 8  j = 1 k = 1 token[8] = TEXT column[1] = {col_name -> name, col_type -> TEXT}
 i = 9 token[9] = ) 
 loop break
+
+
+
+Case 2: 
+token = [
+    ["C","R","E","A","T",E,0,0,0]
+    ["T","A","B","L","E",0,0,0,0]
+    ["u","s","e",r,s,0,0,0,0,0,0]
+    ["(",0,0,0,0,0,0,0,0,0,0,0,0]
+    ["i","d","0",0,0,0,0,0,0,0,0]
+    ["I","N","T",0,0,0,0,0,0,0,0]
+    [",",0,0,0,0,0,0,0,0,0,0,0,0]
+    ["n","a","m","e",0,0,0,0,0,0]
+    ["T","E","X","T",0,0,0,0,0,0]
+    ["I","N","T","0",0,0,0,0,0,0]
+    [")",0,0,0,0,0,0,0,0,0,0,0,0]
+]
+
+column_index = 0
+column_attribute_index = 0
+
+    column[0].col_name = id
+    column_attribute_index = 1
+
+    column[0].col_type = INT
+    column_attribute_index = 2
+
+column_attribute_index = 0
+column_index = 1
+
+    column[1].col_name = name
+    column_attribute_index = 1
+
+    column[1].col_type = TEXT
+    column_attribute_index = 2
+
+--- error thrown
+
+
+

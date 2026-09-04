@@ -2,6 +2,12 @@
 
 Short entries, one per work session. The point is "what did I do, what's next" so picking the project back up tomorrow takes 30 seconds, not 10 minutes.
 
+# 2026-09-05
+
+**Did:** Refactored parser.c file - Now standalone function that can be called by including its declaration defined in the header file. The main file has the REPL. It now takes in the user input. The parser only parses CREATE statement so it expects a create statement; Otherwis it prints and error message.
+**Learned** Passing pointers to a function - Parses uses Query Struct. I initially passed it as value. Turns out, when passing as value, the value is copied into the local scope of that function. To actually change it, we pass in the memory address of the object. Then the object is changed in global scope. I didnt get this problem previously because I was working wih arrays. We you pass an array, it decays into a pointer. So it indirectly, passes as a pointer - not as a value.
+**Next** My REPL can parse CREATE statements. There is another limitation that Im currently using fix size memory objects. Not getting into C dynamic memory allocation stuff - will do that in the future obv. My REPL can take in a CREATE statement, parse it. I cannot do any othe DML or DDL statement. I want to work on how to actually execute the command first. Then will work on dynamic memory allocation and supporting other DDL and DML commands.
+
 # 2026-09-04
 
 **Did:** Refactored tokenizer.c file - Now standalone function that can be called by including its declaration defined in the header file. This tokenizer function is called in the main.c file. The main.c file has the REPL. It now takes in the user input, and prints out the tokens.
