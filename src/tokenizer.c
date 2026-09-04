@@ -7,7 +7,7 @@ static int is_special_char(char c)
     return c == '=' || c == '+' || c == '-' || c == '/' || c == '*' || c == '(' || c == ')' || c == ';' || c == ',';
 }
 
-int tokenizer(char tokens[][10], char user_input[], int user_input_length)
+int tokenizer(char tokens[][20], char user_input[], int user_input_length)
 {
     int token_count = 0;
     int token_index = 0; // Which token am I currently building?

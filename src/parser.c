@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#define MAX_COLUMNS 10
+#include <ctype.h>
 
 // maintains the column definition i.e. its name and type
 typedef struct
@@ -16,101 +16,73 @@ typedef struct
     char table_name[35];
     Column columns[10];
     int num_columns;
-} Table;
+} Query;
 
-int main()
+int create_statement_parser(char tokens[][20], int num_of_tokens, Query *query)
 {
-    int token_count = 10;
-    // In main file, this array will be populated by the tokenizer
-    char token[10][10] = {
-        "CREATE",
-        "TABLE",
-        "users",
-        "(",
-        "id",
-        "INT",
-        ",",
-        "name",
-        "TEXT",
-        ")",
-    };
+    query->num_columns = 0;
+    int column_index = 0;
+    int column_attribute_index = 0;
 
-    int num_columns = 0;
-    int num_tables = 0;
-    char table_name[35] = {0};
-    Column column[MAX_COLUMNS] = {0}; // holds all information for a command on one table
-    Table table[5] = {0};             // holds information for all the tables in the query
-
-    int j = 0; // used to track which column array index to populate;
-    int k = 0; // for struct field tracking; k=0 populate col_name; k=1 populate col_type
-
-    if (strcmp(token[0], "CREATE") != 0)
+    if (strcasecmp(tokens[0], "create") != 0)
     {
-        printf("Syntax error: Expected CREATE statement.\n");
+        printf("Syntax error :: Expected CREATE statement.\n");
         return -1;
     }
 
-    if (strcmp(token[1], "TABLE") != 0)
+    if (strcasecmp(tokens[1], "table") != 0)
     {
-        printf("Syntax error: Expected TABLE after CREATE.");
+        printf("Syntax error :: Expected TABLE after CREATE.\n");
         return -1;
     }
-    strcpy(table_name, token[2]);
 
-    if (strcmp(token[3], "(") != 0)
+    strcpy(query->table_name, tokens[2]); // add check to make sure table name is valid
+
+    if (strcasecmp(tokens[3], "(") != 0)
     {
-        printf("Syntax error : Expected '(' after table name.");
+        printf("Syntax error :: Expected '(' after table name.");
         return -1;
     }
 
     // looping inside the (...) block. Pick each column name and its type that is being defined in the CREATE statement
-    for (size_t i = 4; i < (size_t)token_count; i++)
+    for (int i = 4; i < num_of_tokens; i++)
     // starting after opening bracket - [0]CREATE [1]TABLE [2]<table-name> [3](
     {
-        if (strcmp(token[i], ")") == 0)
+        if (strcasecmp(tokens[i], ")") == 0)
         {
-            // printf("Loop end condition encountered. Break");
-            break;
+            if (column_attribute_index == 2)
+            {
+                // a column definition was completed before
+                query->num_columns++; // a column was completely defined prior to closure [name type])
+                break;
+            }
+
+            printf("Syntax Error :: Expected column type before ')'");
+            return -1;
         }
 
-        if (k == 0) // populate the first struct member
+        if (column_attribute_index == 0) // populate the column_name member of the struct
         {
-            // printf("column_name -> %s\n", token[i]);
-            strcpy(column[j].col_name, token[i]);
-            k++; // first struct member populated. Now the second will be populated
+            strcpy(query->columns[column_index].col_name, tokens[i]);
+            column_attribute_index++; // first struct member populated. Now the second will be populated
         }
-        else if (k == 1) // populate the second struct member
+        else if (column_attribute_index == 1) // populate the column_type member of the struct
         {
-            // printf("column_type -> %s\n", token[i]);
-            strcpy(column[j].col_type, token[i]);
-            k++; // second struct member populated. Now comma expected. Move to next struct in the array
+            strcpy(query->columns[column_index].col_type, tokens[i]);
+            column_attribute_index++; // second struct member populated. Now comma expected. Move to next struct in the array
         }
-        else // comma encountered
+        else if (column_attribute_index == 2 && strcasecmp(tokens[i], ",") == 0)
         {
-            k = 0;
-            j++;
-            num_columns++; // a column was completely defined [name type]
+            // comma encountered after column definition
+            column_attribute_index = 0;
+            column_index++;       // moving to new column
+            query->num_columns++; // a column was completely defined [name type]
+        }
+        else
+        {
+            printf("Syntax Error :: Expected ',' or ')'");
+            return -1;
         }
     }
-
-    // at k =2 comma is encountered. This is reset. For the last condition no comma encountered
-    if (k == 2)
-    {
-        num_columns++; // a column was completely defined prior to closure [name type])
-    }
-
-    printf("Table name: %s\n", table_name);
-    printf("Total number of columns %d\n", num_columns);
-
-    strcpy(table[0].table_name, table_name);
-    table[0].num_columns = num_columns;
-    for (size_t i = 0; i < (size_t)num_columns; i++)
-    {
-        printf("Column[%zu].col_name -> %s\n", i, column[i].col_name);
-        printf("Column[%zu].col_type -> %s\n", i, column[i].col_type);
-        strcpy(table[0].columns[i].col_name, column[i].col_name);
-        strcpy(table[0].columns[i].col_type, column[i].col_type);
-    }
-
     return 0;
 }
