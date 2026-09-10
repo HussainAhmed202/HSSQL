@@ -2,6 +2,14 @@
 
 Short entries, one per work session. The point is "what did I do, what's next" so picking the project back up tomorrow takes 30 seconds, not 10 minutes.
 
+# 2026-09-10
+
+**Did:** - Built new file - catalog.c which stores informations of all Tables in the database
+I did my first **stack smashing** - The catalog array was fixed size of 2 TableSchema structs. Added another. The program behaved weirdly and existed abruptly
+**Learned:** - Passing int pointers. This way a variables value can be changed from inside the function.
+To tackle the stack smashing, used directive MAX_TABLES to specify how many tables allowed in the catalog.
+**Next:** Improving the main.c to integrate all the components.
+
 # 2026-09-05
 
 **Did:** Refactored parser.c file - Now standalone function that can be called by including its declaration defined in the header file. The main file has the REPL. It now takes in the user input. The parser only parses CREATE statement so it expects a create statement; Otherwis it prints and error message.
