@@ -1,20 +1,7 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef CATALOG_H
+#define CATALOG_H
 
-// Maintains a column definition
-typedef struct
-{
-    char col_name[100];
-    char col_type[50];
-} Column;
-
-// Maintains the table/query definition
-typedef struct
-{
-    char table_name[35];
-    Column columns[10];
-    int num_columns;
-} TableSchema;
+#include "parser.h"
 
 // Adds a table to the catalog.
 // Returns the number of tables currently stored,
