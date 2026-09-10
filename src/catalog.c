@@ -16,7 +16,7 @@ int add_table_to_catalog(TableSchema catalog[], int *num_tables, TableSchema new
     return ++*num_tables;
 }
 
-TableSchema *find_table_by_name(TableSchema catalog[], int num_tables, char table_name[])
+TableSchema *find_table_by_name(TableSchema catalog[], int num_tables, const char table_name[])
 {
     for (int i = 0; i < num_tables; i++)
     {
@@ -27,68 +27,67 @@ TableSchema *find_table_by_name(TableSchema catalog[], int num_tables, char tabl
     }
     return NULL;
 }
+// int main()
+// {
+//     int num_of_tables = 0;
+//     TableSchema catalog[MAX_TABLES] = {0};
 
-int main()
-{
-    int num_of_tables = 0;
-    TableSchema catalog[MAX_TABLES] = {0};
+//     // CREATE TABLE user(NUMBER id, VARCHAR2 name)
+//     TableSchema table1 = {
+//         "user",
+//         {{"id", "NUMBER"}, {"name", "VARCHAR2"}},
+//         2};
 
-    // CREATE TABLE user(NUMBER id, VARCHAR2 name)
-    TableSchema table1 = {
-        "user",
-        {{"id", "NUMBER"}, {"name", "VARCHAR2"}},
-        2};
+//     if (add_table_to_catalog(catalog, &num_of_tables, table1) == -1)
+//     {
+//         printf("Memory full - No more tables can be created");
+//         return -1;
+//     }
 
-    if (add_table_to_catalog(catalog, &num_of_tables, table1) == -1)
-    {
-        printf("Memory full - No more tables can be created");
-        return -1;
-    }
+//     // CREATE TABLE transactions(NUMBER id, DOUBLE amount)
+//     TableSchema table2 = {
+//         "transaction",
+//         {{"id", "NUMBER"}, {"amount", "DOUBLE"}},
+//         2};
 
-    // CREATE TABLE transactions(NUMBER id, DOUBLE amount)
-    TableSchema table2 = {
-        "transaction",
-        {{"id", "NUMBER"}, {"amount", "DOUBLE"}},
-        2};
+//     if (add_table_to_catalog(catalog, &num_of_tables, table2) == -1)
+//     {
+//         printf("Memory full - No more tables can be created");
+//         return -1;
+//     }
 
-    if (add_table_to_catalog(catalog, &num_of_tables, table2) == -1)
-    {
-        printf("Memory full - No more tables can be created");
-        return -1;
-    }
+//     // CREATE TABLE bank(NUMBER id, Number user_id, DOUBLE amount, VARCHAR2 user_name)
+//     TableSchema table3 = {
+//         "bank",
+//         {{"id", "NUMBER"}, {"user_id", "NUMBER"}, {"amount", "DOUBLE"}, {"name", "VARCHAR2"}},
+//         4};
 
-    // CREATE TABLE bank(NUMBER id, Number user_id, DOUBLE amount, VARCHAR2 user_name)
-    TableSchema table3 = {
-        "bank",
-        {{"id", "NUMBER"}, {"user_id", "NUMBER"}, {"amount", "DOUBLE"}, {"name", "VARCHAR2"}},
-        4};
+//     if (add_table_to_catalog(catalog, &num_of_tables, table3) == -1)
+//     {
+//         printf("Memory full - No more tables can be created");
+//         return -1;
+//     }
 
-    if (add_table_to_catalog(catalog, &num_of_tables, table3) == -1)
-    {
-        printf("Memory full - No more tables can be created");
-        return -1;
-    }
+//     for (int i = 0; i < num_of_tables; i++)
+//     {
+//         printf("Table name: %s\n", catalog[i].table_name);
+//         printf("Total number of columns %d\n", catalog[i].num_columns);
+//         for (int j = 0; j < catalog[i].num_columns; j++)
+//         {
+//             printf("Column[%d].col_name -> %s\n", i, catalog[i].columns[j].col_name);
+//             printf("Column[%d].col_type -> %s\n", i, catalog[i].columns[j].col_type);
+//         }
+//     }
 
-    for (int i = 0; i < num_of_tables; i++)
-    {
-        printf("Table name: %s\n", catalog[i].table_name);
-        printf("Total number of columns %d\n", catalog[i].num_columns);
-        for (int j = 0; j < catalog[i].num_columns; j++)
-        {
-            printf("Column[%zu].col_name -> %s\n", i, catalog[i].columns[j].col_name);
-            printf("Column[%zu].col_type -> %s\n", i, catalog[i].columns[j].col_type);
-        }
-    }
+//     TableSchema *found_table = find_table_by_name(catalog, num_of_tables, "user");
+//     if (found_table != NULL)
+//     {
+//         printf("Found: %s\n", found_table->table_name);
+//     }
+//     else
+//     {
+//         printf("Table not found\n");
+//     }
 
-    TableSchema *found_table = find_table_by_name(catalog, num_of_tables, "user");
-    if (found_table != NULL)
-    {
-        printf("Found: %s\n", found_table->table_name);
-    }
-    else
-    {
-        printf("Table not found\n");
-    }
-
-    return 0;
-}
+//     return 0;
+// }
