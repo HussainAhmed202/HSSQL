@@ -8,7 +8,7 @@
 
 int main(void)
 {
-    char user_input[100] = {0}; // Limiting user input to 100 characters. Intialize empty array with 100 zeros
+    char user_input[100] = {0}; // Limiting user input to 100 characters
     char token[10][20] = {0};
     TableSchema table; // defined in the parser.h file
     TableSchema catalog[5] = {0};
