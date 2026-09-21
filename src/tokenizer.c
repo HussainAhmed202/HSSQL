@@ -7,7 +7,7 @@ static int is_special_char(char c)
     return c == '=' || c == '+' || c == '-' || c == '/' || c == '*' || c == '(' || c == ')' || c == ';' || c == ',';
 }
 
-int tokenizer(char tokens[][20], char user_input[], int user_input_length)
+int tokenizer(char tokens[10][20], char user_input[], int user_input_length)
 {
     int token_count = 0;
     int token_index = 0; // Which token am I currently building?
@@ -26,9 +26,11 @@ int tokenizer(char tokens[][20], char user_input[], int user_input_length)
         // below is code active when text is present
         if (user_input[j] == ' ' && char_index > 0)
         {
-            // space encountered.
-            // char_index > 0 i.e. a token was being read
+            // space encountered while a token is been read [char_index>0]
             // white space marks the end of the token
+
+            // add NULL terminator to finalize a token
+            tokens[token_index][char_index] = '\0';
             token_index++;  // new word so next token
             char_index = 0; // marks the 0th index of the new token
             token_count++;
@@ -37,13 +39,16 @@ int tokenizer(char tokens[][20], char user_input[], int user_input_length)
         {
             // we were reading a word. Then encountered a special character
 
-            // finalize the word.
+            // add NULL terminator to finalize a token
+            tokens[token_index][char_index] = '\0';
+
             token_index++;
             char_index = 0;
             token_count++;
 
             // the special character is a separate token
             tokens[token_index][char_index] = user_input[j];
+            tokens[token_index][char_index + 1] = '\0';
             token_count++;
 
             // move to the next tokens
@@ -54,6 +59,7 @@ int tokenizer(char tokens[][20], char user_input[], int user_input_length)
             // we encountered space in prev iteration.
             // already token_index++; char_index reset char_index= 0;
             tokens[token_index][char_index] = user_input[j];
+            tokens[token_index][char_index + 1] = '\0';
 
             // move to the next tokens
             token_index++;
@@ -69,10 +75,12 @@ int tokenizer(char tokens[][20], char user_input[], int user_input_length)
 
     if (char_index > 0)
     {
-        // there is one tokens which was not counted in the loop
+        // there is one token which was not counted in the loop
         // this could be because there is only one word in the input
         // the last word of the input
         // char_index was never reset for both cases
+        // add NULL terminator to finalize a token
+        tokens[token_index][char_index] = '\0';
         token_count++;
     }
 
