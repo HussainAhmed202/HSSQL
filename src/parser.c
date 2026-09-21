@@ -40,7 +40,7 @@ int create_statement_parser(char tokens[][20], int num_of_tokens, TableSchema *t
 
     if (strcasecmp(tokens[3], "(") != 0)
     {
-        printf("Syntax error :: Expected '(' after table name.");
+        printf("Syntax error :: Expected '(' after table name.\n");
         return -1;
     }
 
