@@ -1,6 +1,30 @@
 # Devlog
 
-Short entries, one per work session. The point is "what did I do, what's next" so picking the project back up tomorrow takes 30 seconds, not 10 minutes.
+# 2026-09-26
+
+**Did** - Creating a separate file repl.c for the REPL. Making main.c cleaner. The challenge here is how to separate the REPL from the rest. The main.c is currently my REPL sort of. I have modularized the code a bit. The EOF, input lenght, exit commands have been created into separate functions. The REPL function will return 1 or 0. 1 means exit the program.It takes the input and prepares it for tokenzier.
+
+# 2026-09-21
+
+**Problem** - Logging back in after a while. There is one issue right now.
+Welcome to HSSQL
+hssql> create table customer_accounts
+create table customer_accounts
+hssql> create table orders
+create table orderser_accounts
+hssql> del table this
+delate table thisrser_accounts
+
+There is an issue in the tokenization of the user input. When I assign a value in the tokens array, I missed the intialization step. So the new input overides the previous input. This is fine. However, when the new input is smaller than the previous input, then it is a problem. In the above output, the first input table was customer_accounts which is 18 chars long. The next input is orders which is 7 chars long. This means at
+tokens[][2] = customer_accounts
+next iteration
+tokens[][2] = orderser_accounts
+There are two ways to resolve this issue
+
+1. Re-intialize the array everytime in the REPL. This would zero the values held in the array. However, there is a better way
+2. This is what I go with. In C, strings are whatever characters encountered before **_\0_** which is the NULL terminator. Currently, I was not adding the null terminator to my tokens.
+   **Did:** - Modified tokenizer.c. Added null terminator at the end of a token to avoid buffer overflow in the REPL. I also added the find_table_by_name function defined in the catalog file. Now main will call this function to check if a table exists before adding it to the catalog
+   **Learned** - C strings are weird. Learned about null terminators importance.
 
 # 2026-09-10
 
