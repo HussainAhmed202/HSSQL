@@ -1,8 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-// #include "tokenizer.h"
-// #include "parser.h"
-// #include "catalog.h"
 
 void welcome_msg()
 {
@@ -20,59 +17,70 @@ void goodbye_msg()
     printf("---------------------------------\n");
 }
 
-int is_valid_input(char *user_input, int max_input_size)
+int is_EOF(char *input)
 {
-    // EOF signal sent
-    return (user_input == NULL) == 1;
-
-    // If fgets returns string that does not contain '\n' - this means that input is outside 100 Bytes limit
-    if (strchr(user_input, '\n') == NULL)
+    if (input == NULL)
     {
-        printf("Command Max limit reached\n");
-
-        // Clear the rest of the input
-        int c;
-        while ((c = getchar()) != '\n' && c != EOF)
-            ;
+        return 1;
     }
 
-    // Remove new-line character
-    user_input[strcspn(user_input, "\n")] = '\0';
-    return (strcmp(user_input, ".exit") == 0);
+    return 0;
+}
 
-    // all cases passed - input is valid
+int is_input_length_valid(char *input)
+{
+    if (strchr(input, '\n') == NULL)
+    {
+        int c;
+
+        while ((c = getchar()) != '\n' && c != EOF)
+            ;
+
+        return 0;
+    }
+
     return 1;
 }
 
-int main()
+void trim_input(char *input)
 {
-    char user_input[10] = {0}; // Limiting user input to 100 characters
-    // char token[10][20] = {0};  // holds the tokenized user input
-    // TableSchema table;
-    welcome_msg();
-    printf("hssql> ");
-    if (!is_valid_input(fgets(user_input, 10, stdin), 10))
+    input[strcspn(input, "\n")] = '\0';
+}
+
+int is_exit_command(char *input)
+{
+    if (strcmp(input, ".exit") == 0)
     {
-        goodbye_msg();
+        return 1;
     }
 
-    // printf("%s\n", user_input);
-    // if (is_valid_input(user_input, 10))
-    // {
-    //     printf("%s\n", user_input);
-    // }
+    return 0;
+}
 
-    // while ()
-    // {
-    //     // Remove new-line character
-    //     user_input[strcspn(user_input, "\n")] = '\0';
-    //     int token_count = tokenizer(token, user_input, 10);
-    //     if (create_statement_parser(token, token_count, &table) == -1)
-    //     {
-    //         printf("Something bad happended\n");
-    //         // should_exit = true;
-    //         continue;
-    //     }
-    // }
+int repl(char *in_stream, int max_input_len)
+{
+    char *user_input = fgets(in_stream, max_input_len, stdin);
+
+    // EOF
+    if (is_EOF(user_input))
+    {
+        return 1;
+    }
+
+    // Input length exceeds limit
+    if (!is_input_length_valid(user_input))
+    {
+        printf("Command Max limit reached\n");
+    }
+
+    // Remove newline
+    trim_input(user_input);
+
+    // .exit
+    if (is_exit_command(user_input))
+    {
+        return 1;
+    }
+
     return 0;
 }
