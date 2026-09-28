@@ -20,12 +20,19 @@ int main(void)
     while (1)
     {
         printf("hssql> ");
+        int reply = repl(in_stream, (int)sizeof(in_stream));
 
-        if (repl(in_stream, (int)sizeof(in_stream)))
+        if (reply == 1) // EOF or exit command
         {
             goodbye_msg();
             break;
         }
+        else if (reply == 2)
+        {
+            printf("Command Max limit reached\n");
+            continue;
+        }
+
         int token_count = tokenizer(token, in_stream, (int)strlen(in_stream));
         if (create_statement_parser(token, token_count, &table) == -1)
         {

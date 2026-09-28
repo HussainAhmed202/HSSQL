@@ -70,9 +70,8 @@ int repl(char *in_stream, int max_input_len)
     // Input length exceeds limit
     if (!is_input_length_valid(user_input))
     {
-        printf("Command Max limit reached\n");
+        return 2;
     }
-
     // Remove newline
     trim_input(user_input);
 
