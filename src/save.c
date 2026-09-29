@@ -6,9 +6,9 @@ typedef struct table
     char name[50];
 } table;
 
-int save_object(char *file_name, table t)
+int save_object(char *file_path, table t)
 {
-    FILE *file = fopen(file_name, "wb");
+    FILE *file = fopen(file_path, "wb");
     if (file == NULL)
     {
         return 1;
