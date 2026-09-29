@@ -6,30 +6,48 @@ typedef struct table
     char name[50];
 } table;
 
-int main()
+int save_object(char *file_name, table t)
 {
-    table t1 = {2, "users"};
-
-    FILE *file = fopen("data/table.dat", "wb");
+    FILE *file = fopen(file_name, "wb");
     if (file == NULL)
     {
-        perror("Error opening file");
         return 1;
     }
 
-    size_t written = fwrite(&t1, sizeof(t1), 1, file);
+    size_t written = fwrite(&t, sizeof(t), 1, file);
 
     if (written == 1)
     {
-        printf("Struct written to file successfully.\n");
+        fclose(file);
+        return 2;
     }
     else
     {
+        fclose(file);
+        return 3;
+    }
+}
+
+int main()
+{
+    table t1 = {2, "users"};
+    size_t written = save_object("data/table.dat", t1);
+    if (written == 2)
+    {
+        printf("Struct written to file successfully.\n");
+    }
+    else if (written == 3)
+    {
         printf("Error writing struct to file.\n");
     }
-
-    // 5. Always close the file
-    fclose(file);
+    else if (written == 1)
+    {
+        printf("Error opening file\n");
+    }
+    else
+    {
+        printf("Something issue happended\n");
+    }
 
     return 0;
 }
