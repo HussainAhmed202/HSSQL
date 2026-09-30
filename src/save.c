@@ -5,7 +5,7 @@
 #include "parser.h"
 #include "catalog.h"
 
-int read_object(char *object_type, char *object_name, void *object, void *objects_array[], int num_of_elements_objects_array)
+int read_object(char *object_type, char *object_name, void *object, void *objects_array, int num_of_elements_objects_array)
 {
     // here there will be if statement that will deduce what kind of object this is
     // rn, only tables
@@ -39,12 +39,12 @@ int read_object(char *object_type, char *object_name, void *object, void *object
                 TableSchema table_object = *((TableSchema *)object);
                 if (strcmp(table_object.table_name, object_name) == 0)
                 {
-                    printf("%s\n", table_object.table_name);
+                    printf("Table name = %s\n", table_object.table_name);
                     printf("----------------------------------\n");
-                    printf("NAME\tTYPE\n");
+                    printf("NAME\t|\tTYPE\n");
                     for (int j = 0; j < table_object.num_columns; j++)
                     {
-                        printf("%s\t%s\n", table_object.columns[j].col_name, table_object.columns[j].col_type);
+                        printf("%s\t|\t%s\n", table_object.columns[j].col_name, table_object.columns[j].col_type);
                     }
                     printf("----------------------------------\n");
                     return 1;
@@ -97,32 +97,29 @@ int main()
         "users",
         {table_1_col_1, table_1_col_2},
         2};
-    TableSchema catalog[2] = {table1, 0, 0, 0, 0};
+    TableSchema catalog[1] = {table1};
 
-    int written = save_object("TABLE", &table1);
-    if (written == 2)
-    {
-        printf("Struct written to file successfully.\n");
-    }
-    else if (written == 3)
-    {
-        printf("Error writing struct to file.\n");
-    }
-    else if (written == 1)
-    {
-        printf("Error opening file\n");
-    }
-    else
-    {
-        printf("Something issue happended\n");
-    }
-
-    // table t2;
-    // int read = read_object("data/table.dat", t2);
-    // if (condition)
+    // int written = save_object("TABLE", &catalog);
+    // if (written == 2)
     // {
-    //     /* code */
+    //     printf("Struct written to file successfully.\n");
     // }
+    // else if (written == 3)
+    // {
+    //     printf("Error writing struct to file.\n");
+    // }
+    // else if (written == 1)
+    // {
+    //     printf("Error opening file\n");
+    // }
+    // else
+    // {
+    //     printf("Something issue happended\n");
+    // }
+
+    TableSchema table2; //  read this table
+
+    read_object("TABLE", "users", &table2, &catalog, 1);
 
     return 0;
 }
