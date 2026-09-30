@@ -5,12 +5,13 @@
 #include "parser.h"
 #include "catalog.h"
 
-int read_object(char *object_type, char *object_name, void *object, void *objects_array, int num_of_elements_objects_array)
+int read_object(char *object_type, char *object_name, void *object, int catalog_size)
 {
     // here there will be if statement that will deduce what kind of object this is
     // rn, only tables
-    if (object_type == "TABLE")
+    if (strcmp(object_type, "TABLE") == 0)
     {
+        TableSchema table;
         FILE *read_ptr = fopen("data/table.dat", "rb");
         if (read_ptr == NULL)
         {
@@ -19,36 +20,28 @@ int read_object(char *object_type, char *object_name, void *object, void *object
         }
         long offset = 0;
 
-        for (int i = 0; i < num_of_elements_objects_array; i++)
+        for (int i = 0; i < catalog_size; i++)
         {
             offset = (long)i * sizeof(TableSchema);
-            if (fseek(read_ptr, offset, SEEK_SET) != 0)
+            size_t item_read = fread(&table, sizeof(TableSchema), 1, read_ptr);
+            if (item_read != 1)
             {
-                perror("Error seeking to location");
-                fclose(read_ptr);
-                return 0;
+                printf("Error reading data from file.\n");
+                return EXIT_SUCCESS;
             }
-            else
+            // TableSchema table_object = *((TableSchema *)object);
+            if (strcmp(table.table_name, object_name) == 0)
             {
-                size_t item_read = fread(object, sizeof(TableSchema), 1, read_ptr);
-                if (item_read != 1)
+                printf("Table name = %s\n", table.table_name);
+                printf("----------------------------------\n");
+                printf("NAME\t|\tTYPE\n");
+                for (int j = 0; j < table.num_columns; j++)
                 {
-                    printf("Error reading data from file.\n");
-                    return EXIT_SUCCESS;
+                    printf("%s\t|\t%s\n", table.columns[j].col_name, table.columns[j].col_type);
                 }
-                TableSchema table_object = *((TableSchema *)object);
-                if (strcmp(table_object.table_name, object_name) == 0)
-                {
-                    printf("Table name = %s\n", table_object.table_name);
-                    printf("----------------------------------\n");
-                    printf("NAME\t|\tTYPE\n");
-                    for (int j = 0; j < table_object.num_columns; j++)
-                    {
-                        printf("%s\t|\t%s\n", table_object.columns[j].col_name, table_object.columns[j].col_type);
-                    }
-                    printf("----------------------------------\n");
-                    return 1;
-                }
+                printf("----------------------------------\n");
+                *(TableSchema *)object = table;
+                return 1;
             }
         }
         fclose(read_ptr);
@@ -57,6 +50,7 @@ int read_object(char *object_type, char *object_name, void *object, void *object
         printf("Error:: No table with the name %s found\n", object_name);
         return -1;
     }
+    return -1;
 }
 
 int save_object(char *object_type, void *object)
@@ -64,7 +58,7 @@ int save_object(char *object_type, void *object)
     // here there will be if statement that will deduce what kind of object
     // to typecast to based on the object type provided
 
-    if (object_type == "TABLE")
+    if (strcmp(object_type, "TABLE") == 0)
     {
         TableSchema table_object = *((TableSchema *)object);
         FILE *file = fopen("data/table.dat", "ab");
@@ -86,6 +80,7 @@ int save_object(char *object_type, void *object)
             return 3;
         }
     }
+    return -1;
 }
 
 int main()
@@ -119,7 +114,11 @@ int main()
 
     TableSchema table2; //  read this table
 
-    read_object("TABLE", "users", &table2, &catalog, 1);
+    int read = read_object("TABLE", "users", &table2, 1);
+    if (read == -1)
+    {
+        printf("Error :: No such table found\n");
+    }
 
     return 0;
 }
