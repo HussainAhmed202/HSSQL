@@ -1,0 +1,53 @@
+catalog[
+    TableSchema : {
+        "customer",
+        {{"id", "NUMBER"}, {"name", "VARCHAR2"}},
+        2}
+    },
+    TableSchema : {
+        "account",
+        {{"id", "NUMBER"}, {"name", "VARCHAR2"}},
+        2}
+    }
+]
+
+
+Size of catalog: 50   100  20  50  100  20  => SUM = 340
+Size of TableSchema: 50+100+20 = 170
+Number of members in catalog: 2
+Size of catalog: Number of TableSchema elements X size of TableSchema element
+                : 170 * 2
+                : 340
+=========================================================================
+.....name  colummns  num_of_columns  name  colummns  num_of_columns .....
+customer    {              2         account ..                                
+            {"id", 
+            "NUMBER"
+            }, 
+            {"name", 
+            "VARCHAR2"
+            }}
+
+When database starts, read the entire catalog
+When searching for a table:
+
+Lets say::
+    Size of catalog = 150
+    Size of TableSchema = 50
+    This indicates that there are 3 elements in the catalog array
+        ::  150/50 = 3
+0===============49 50=============99 100============149============
+|<   index 0    >| |<   index 1    >||<   index 2    >| ...
+
+
+Iterate over the index -> [index = sizeof(catalog)/sizeof(TableSchema)]
+[Bytes to read sizeof(TableSchema)]
+- index=0; read bytes 0 to 49 [first 50B]  
+- index=1; read bytes 50 to 99 [next 50B] 
+- index=2; read bytes 100 to 149 [next 50B] 
+...
+
+Once object is read, cmp its name with the name provided in the read function.
+If match then return the object.
+
+

@@ -1,5 +1,11 @@
 # Devlog
 
+# 2026-09-30
+
+**Problem** - How to read a specific table. What to store in the binary file. A table? The entire catalog??
+What is the size of the TableSchema in binary file? How to read specific table. How is a array of TableSchema stored?For this I visited some CS. An array is a fixed contigous block of memory. An array of struct is still a fixed contigous block of memory. Therefore, when i store a array of struct, the data is stored linearly. How to read it. Similar to how we iterate over a array element. Number of elements X Size of one element.In this case, it is the number of tables in the catalog X size of a TableSchema object.
+**Did** - Late at night. Laptop battery is also low. I need to quickly draft functions that save a table struct as a binary object and a function that reads this binary object. Both these functions are saved in the save.c file.
+
 # 2026-09-26
 
 **Did** - Creating a separate file repl.c for the REPL. Making main.c cleaner. The challenge here is how to separate the REPL from the rest. The main.c is currently my REPL sort of. I have modularized the code a bit. The EOF, input lenght, exit commands have been created into separate functions. The REPL function will return 1 or 0. 1 means exit the program.It takes the input and prepares it for tokenzier.
