@@ -1,5 +1,9 @@
 # Devlog
 
+# 2026-10-06
+
+**Did** - Been some time. I did work in between but forget to add the logs. Today, I printed a NULL pointer. It was printed as (null). Thats awesome. Integrated the save.c file functions into the main.c
+
 # 2026-09-30
 
 **Problem** - How to read a specific table. What to store in the binary file. A table? The entire catalog??
