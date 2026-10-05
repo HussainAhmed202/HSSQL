@@ -6,6 +6,7 @@
 #include "parser.h"
 #include "catalog.h"
 #include "repl.h"
+#include "save.h"
 
 int main(void)
 {
@@ -50,6 +51,14 @@ int main(void)
             // should_exit = true;
             continue;
         }
+        else if (read_object("TABLE", table.table_name, &table, 1) == 1)
+        {
+            // Check in table in memory
+            // table found. Throw error.
+            printf("Table %s already exists\n", found_table->table_name);
+            // should_exit = true;
+            continue;
+        }
         /// table not present in the catalog.Add table to the catalog
         else if (add_table_to_catalog(catalog, &num_of_tables, table) == -1)
         {
@@ -59,7 +68,24 @@ int main(void)
         }
         else
         {
-            printf("Table %s CREATED successfully\n", table.table_name);
+            // save the table in memory
+            int written = save_object("TABLE", &catalog);
+            if (written == 2)
+            {
+                printf("Table %s CREATED successfully\n", table.table_name);
+            }
+            else if (written == 3)
+            {
+                printf("Error writing to file.\n");
+            }
+            else if (written == 1)
+            {
+                printf("Error opening file\n");
+            }
+            else
+            {
+                printf("Something issue happended\n");
+            }
         }
     }
     return 0;
