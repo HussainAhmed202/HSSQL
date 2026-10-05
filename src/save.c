@@ -41,7 +41,7 @@ int read_object(char *object_type, char *object_name, void *object, int catalog_
                 }
                 printf("----------------------------------\n");
                 *(TableSchema *)object = table;
-                return 1;
+                return 10;
             }
         }
         fclose(read_ptr);
