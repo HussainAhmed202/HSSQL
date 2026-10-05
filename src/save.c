@@ -83,42 +83,42 @@ int save_object(char *object_type, void *object)
     return -1;
 }
 
-int main()
-{
-    Column table_1_col_1 = {"id", "NUMBER"};
-    Column table_1_col_2 = {"name", "VARCHAR2"};
+// int main()
+// {
+//     Column table_1_col_1 = {"id", "NUMBER"};
+//     Column table_1_col_2 = {"name", "VARCHAR2"};
 
-    TableSchema table1 = {
-        "users",
-        {table_1_col_1, table_1_col_2},
-        2};
-    TableSchema catalog[1] = {table1};
+//     TableSchema table1 = {
+//         "users",
+//         {table_1_col_1, table_1_col_2},
+//         2};
+//     TableSchema catalog[1] = {table1};
 
-    // int written = save_object("TABLE", &catalog);
-    // if (written == 2)
-    // {
-    //     printf("Struct written to file successfully.\n");
-    // }
-    // else if (written == 3)
-    // {
-    //     printf("Error writing struct to file.\n");
-    // }
-    // else if (written == 1)
-    // {
-    //     printf("Error opening file\n");
-    // }
-    // else
-    // {
-    //     printf("Something issue happended\n");
-    // }
+//     // int written = save_object("TABLE", &catalog);
+//     // if (written == 2)
+//     // {
+//     //     printf("Struct written to file successfully.\n");
+//     // }
+//     // else if (written == 3)
+//     // {
+//     //     printf("Error writing struct to file.\n");
+//     // }
+//     // else if (written == 1)
+//     // {
+//     //     printf("Error opening file\n");
+//     // }
+//     // else
+//     // {
+//     //     printf("Something issue happended\n");
+//     // }
 
-    TableSchema table2; //  read this table
+//     TableSchema table2; //  read this table
 
-    int read = read_object("TABLE", "users", &table2, 1);
-    if (read == -1)
-    {
-        printf("Error :: No such table found\n");
-    }
+//     int read = read_object("TABLE", "users", &table2, 1);
+//     if (read == -1)
+//     {
+//         printf("Error :: No such table found\n");
+//     }
 
-    return 0;
-}
+//     return 0;
+// }
