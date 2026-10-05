@@ -15,7 +15,7 @@ int read_object(char *object_type, char *object_name, void *object, int catalog_
         FILE *read_ptr = fopen("data/table.dat", "rb");
         if (read_ptr == NULL)
         {
-            perror("Error opening file for reading");
+            // perror("Error opening file for reading");
             return EXIT_FAILURE;
         }
         long offset = 0;
@@ -26,7 +26,7 @@ int read_object(char *object_type, char *object_name, void *object, int catalog_
             size_t item_read = fread(&table, sizeof(TableSchema), 1, read_ptr);
             if (item_read != 1)
             {
-                printf("Error reading data from file.\n");
+                // printf("Error reading data from file.\n");
                 return EXIT_SUCCESS;
             }
             // TableSchema table_object = *((TableSchema *)object);
@@ -47,7 +47,7 @@ int read_object(char *object_type, char *object_name, void *object, int catalog_
         fclose(read_ptr);
 
         // if program execution is in this block it means table not found
-        printf("Error:: No table with the name %s found\n", object_name);
+        // printf("Error:: No table with the name %s found\n", object_name);
         return -1;
     }
     return -1;
