@@ -51,11 +51,11 @@ int main(void)
             // should_exit = true;
             continue;
         }
-        else if (read_object("TABLE", table.table_name, &table, 1) == 1)
+        else if (read_object("TABLE", table.table_name, &table, 1) == 10)
         {
             // Check in table in memory
             // table found. Throw error.
-            printf("Table %s already exists\n", found_table->table_name);
+            printf("Table %s already exists\n", table.table_name);
             // should_exit = true;
             continue;
         }
