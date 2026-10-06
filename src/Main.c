@@ -51,7 +51,7 @@ int main(void)
             // should_exit = true;
             continue;
         }
-        else if (read_object("TABLE", table.table_name, &table, 1) == 10)
+        else if (read_object("TABLE", table.table_name, &table, num_of_tables) == 10)
         {
             // Check in table in memory
             // table found. Throw error.
@@ -62,7 +62,7 @@ int main(void)
         /// table not present in the catalog.Add table to the catalog
         else if (add_table_to_catalog(catalog, &num_of_tables, table) == -1)
         {
-            printf("Memory full - No more tables can be created");
+            printf("Memory full - No more tables can be created\n");
             // should_exit = true;
             continue;
         }
@@ -73,6 +73,7 @@ int main(void)
             if (written == 2)
             {
                 printf("Table %s CREATED successfully\n", table.table_name);
+                printf("Location %p\n", &catalog);
             }
             else if (written == 3)
             {
