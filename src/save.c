@@ -12,7 +12,7 @@ int read_object(char *object_type, char *object_name, void *object, int catalog_
     if (strcmp(object_type, "TABLE") == 0)
     {
         TableSchema table;
-        FILE *read_ptr = fopen("data/table.dat", "rb");
+        FILE *read_ptr = fopen("data/db/schema/table", "rb");
         if (read_ptr == NULL)
         {
             // perror("Error opening file for reading");
@@ -61,7 +61,7 @@ int save_object(char *object_type, void *object)
     if (strcmp(object_type, "TABLE") == 0)
     {
         TableSchema table_object = *((TableSchema *)object);
-        FILE *file = fopen("data/table.dat", "ab");
+        FILE *file = fopen("data/db/schema/table.dat", "wb");
         if (file == NULL)
         {
             return 1;
