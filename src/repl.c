@@ -17,44 +17,17 @@ void goodbye_msg()
     printf("---------------------------------\n");
 }
 
-int is_EOF(char *input)
-{
-    if (input == NULL)
-    {
-        return 1;
-    }
-
-    return 0;
-}
-
 int is_input_length_valid(char *input)
 {
     if (strchr(input, '\n') == NULL)
     {
         int c;
-
         while ((c = getchar()) != '\n' && c != EOF)
             ;
-
         return 0;
     }
 
     return 1;
-}
-
-void trim_input(char *input)
-{
-    input[strcspn(input, "\n")] = '\0';
-}
-
-int is_exit_command(char *input)
-{
-    if (strcmp(input, ".exit") == 0)
-    {
-        return 1;
-    }
-
-    return 0;
 }
 
 int repl(char *in_stream, int max_input_len)
@@ -62,7 +35,7 @@ int repl(char *in_stream, int max_input_len)
     char *user_input = fgets(in_stream, max_input_len, stdin);
 
     // EOF
-    if (is_EOF(user_input))
+    if (user_input == NULL)
     {
         return 1;
     }
@@ -72,11 +45,12 @@ int repl(char *in_stream, int max_input_len)
     {
         return 2;
     }
+
     // Remove newline
-    trim_input(user_input);
+    user_input[strcspn(user_input, "\n")] = '\0';
 
     // .exit
-    if (is_exit_command(user_input))
+    if (strcmp(user_input, ".exit") == 0)
     {
         return 1;
     }
