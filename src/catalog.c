@@ -46,7 +46,7 @@ TableSchema *load_catalog_from_disk(char *object_name, TableSchema *object)
     return catalog;
 }
 
-int save_catalog_to_disk(char *object_name, TableSchema *object, size_t size)
+int write_catalog_to_disk(char *object_name, TableSchema *object, size_t size)
 {
     char file_path[512];
 
@@ -57,7 +57,7 @@ int save_catalog_to_disk(char *object_name, TableSchema *object, size_t size)
         return -1;
     }
 
-    FILE *fp = fopen(file_path, "rb");
+    FILE *fp = fopen(file_path, "w");
     if (fp == NULL)
     {
         printf("Failed to open catalog file '%s'\n", file_path);
@@ -94,67 +94,76 @@ TableSchema *find_table_in_catalog(TableSchema catalog[], int num_tables, const 
 }
 int main()
 {
-    int num_of_tables = 0;
-    TableSchema *catalog = malloc(sizeof(TableSchema) * 5);
+    // int num_of_tables = 0;
+    // TableSchema *schema1 = malloc(sizeof(TableSchema) * 5);
 
-    // hssql>CREATE TABLE user(NUMBER id, VARCHAR2 name)
-    TableSchema table1 = {
-        "user",
-        {{"id", "NUMBER"}, {"name", "VARCHAR2"}},
-        2};
+    // // hssql>CREATE TABLE user(NUMBER id, VARCHAR2 name)
+    // TableSchema table1 = {
+    //     "user",
+    //     {{"id", "NUMBER"}, {"name", "VARCHAR2"}},
+    //     2};
 
-    if (add_table_to_catalog(catalog, &num_of_tables, table1) == -1)
-    {
-        printf("Memory full - No more tables can be created");
-        return -1;
-    }
+    // if (add_table_to_catalog(schema1, &num_of_tables, table1) == -1)
+    // {
+    //     printf("Memory full - No more tables can be created");
+    //     return -1;
+    // }
 
-    // CREATE TABLE transactions(NUMBER id, DOUBLE amount)
-    TableSchema table2 = {
-        "transaction",
-        {{"id", "NUMBER"}, {"amount", "DOUBLE"}},
-        2};
+    // // CREATE TABLE transactions(NUMBER id, DOUBLE amount)
+    // TableSchema table2 = {
+    //     "transaction",
+    //     {{"id", "NUMBER"}, {"amount", "DOUBLE"}},
+    //     2};
 
-    if (add_table_to_catalog(catalog, &num_of_tables, table2) == -1)
-    {
-        printf("Memory full - No more tables can be created");
-        return -1;
-    }
+    // if (add_table_to_catalog(schema1, &num_of_tables, table2) == -1)
+    // {
+    //     printf("Memory full - No more tables can be created");
+    //     return -1;
+    // }
 
-    // CREATE TABLE bank(NUMBER id, Number user_id, DOUBLE amount, VARCHAR2 user_name)
-    TableSchema table3 = {
-        "bank",
-        {{"id", "NUMBER"}, {"user_id", "NUMBER"}, {"amount", "DOUBLE"}, {"name", "VARCHAR2"}},
-        4};
+    // // CREATE TABLE bank(NUMBER id, Number user_id, DOUBLE amount, VARCHAR2 user_name)
+    // TableSchema table3 = {
+    //     "bank",
+    //     {{"id", "NUMBER"}, {"user_id", "NUMBER"}, {"amount", "DOUBLE"}, {"name", "VARCHAR2"}},
+    //     4};
 
-    if (add_table_to_catalog(catalog, &num_of_tables, table3) == -1)
-    {
-        printf("Memory full - No more tables can be created");
-        return -1;
-    }
+    // if (add_table_to_catalog(schema1, &num_of_tables, table3) == -1)
+    // {
+    //     printf("Memory full - No more tables can be created");
+    //     return -1;
+    // }
 
-    for (int i = 0; i < num_of_tables; i++)
-    {
-        printf("Table name: %s\n", catalog[i].table_name);
-        printf("Total number of columns %d\n", catalog[i].num_columns);
-        for (int j = 0; j < catalog[i].num_columns; j++)
-        {
-            printf("Column[%d].col_name -> %s\n", i, catalog[i].columns[j].col_name);
-            printf("Column[%d].col_type -> %s\n", i, catalog[i].columns[j].col_type);
-        }
-    }
+    // for (int i = 0; i < num_of_tables; i++)
+    // {
+    //     printf("Table name: %s\n", schema1[i].table_name);
+    //     printf("Total number of columns %d\n", schema1[i].num_columns);
+    //     for (int j = 0; j < schema1[i].num_columns; j++)
+    //     {
+    //         printf("Column[%d].col_name -> %s\n", i, schema1[i].columns[j].col_name);
+    //         printf("Column[%d].col_type -> %s\n", i, schema1[i].columns[j].col_type);
+    //     }
+    // }
 
-    TableSchema *found_table = find_table_in_catalog(catalog, num_of_tables, "user");
-    if (found_table != NULL)
-    {
-        printf("Found: %s\n", found_table->table_name);
-    }
-    else
-    {
-        printf("Table not found\n");
-    }
+    // TableSchema *found_table = find_table_in_catalog(schema1, num_of_tables, "user");
+    // if (found_table != NULL)
+    // {
+    //     printf("Found: %s\n", found_table->table_name);
+    // }
+    // else
+    // {
+    //     printf("Table not found\n");
+    // }
 
-    free(catalog);
+    // if (write_catalog_to_disk("schema1", schema1, num_of_tables) == num_of_tables)
+    // {
+    //     printf("Success\n");
+    // }
+    // else
+    // {
+    //     printf("Fail\n");
+    // }
+
+    free(schema1);
 
     return 0;
 }
