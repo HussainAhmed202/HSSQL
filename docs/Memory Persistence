@@ -1,3 +1,26 @@
+hssql> create table t1(id PK)
+
+
+token = [
+    create
+    table
+    t1
+    (
+    id
+    PK
+    )
+]
+
+
+TableSchema = {
+    "t1",
+    {{"id", "PK"}},
+    1}
+},
+
+
+
+
 catalog[
     TableSchema : {
         "customer",

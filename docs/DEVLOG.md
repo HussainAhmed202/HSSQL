@@ -1,5 +1,129 @@
 # Devlog
 
+# 2026-10-12
+
+**Problem** - I can write a TableSchema successfully to a binary file. But cannot read correctly. Turns out, when structus are stored, the compiler adds padding to make it easier for the cpu to access. For example,
+Struct = {
+char a; //1 Byte
+int b; //4 Byte
+char c; //1 Byte
+}
+
+Compiler will 0 pad the regions such that each member of the struct occupies the same number of bytes. In this struct, the largest object is the second member b which is an integer; it takes 4Bytes. The total size of the struct must be a multiple of the largest member of the struct. Therefore, the min largest possible size is 12 Bytes.
+Bytes 0-3 occupied by member a; 4-7 by b; 8-11 by c.
+0 a
+1 0
+2 0
+3 0
+4 b
+5 b
+6 b
+7 b
+8 c
+9 0
+10 0
+11 0
+
+=== DUMPING RAW MEMORY FOR TableSchema (1540 bytes) ===
+
+Offset 0000 [0x000]: E8 2F 81 00 03 00 00 00 00 00 00 00 00 00 00 00
+Offset 0016 [0x010]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0032 [0x020]: 00 00 00 00 00 00 00 69 64 00 00 00 00 00 00 00
+Offset 0048 [0x030]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0064 [0x040]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0080 [0x050]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0096 [0x060]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0112 [0x070]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0128 [0x080]: 00 00 00 00 00 00 00 00 00 00 00 4E 55 4D 42 45
+Offset 0144 [0x090]: 52 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0160 [0x0A0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0176 [0x0B0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 75 73 65
+Offset 0192 [0x0C0]: 72 5F 69 64 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0208 [0x0D0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0224 [0x0E0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0240 [0x0F0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0256 [0x100]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0272 [0x110]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0288 [0x120]: 00 4E 55 4D 42 45 52 00 00 00 00 00 00 00 00 00
+Offset 0304 [0x130]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0320 [0x140]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0336 [0x150]: 00 00 00 61 6D 6F 75 6E 74 00 00 00 00 00 00 00
+Offset 0352 [0x160]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0368 [0x170]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0384 [0x180]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0400 [0x190]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0416 [0x1A0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0432 [0x1B0]: 00 00 00 00 00 00 00 44 4F 55 42 4C 45 00 00 00
+Offset 0448 [0x1C0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0464 [0x1D0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0480 [0x1E0]: 00 00 00 00 00 00 00 00 00 6E 61 6D 65 00 00 00
+Offset 0496 [0x1F0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0512 [0x200]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0528 [0x210]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0544 [0x220]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0560 [0x230]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0576 [0x240]: 00 00 00 00 00 00 00 00 00 00 00 00 00 56 41 52
+Offset 0592 [0x250]: 43 48 41 52 32 00 00 00 00 00 00 00 00 00 00 00
+Offset 0608 [0x260]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0624 [0x270]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0640 [0x280]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0656 [0x290]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0672 [0x2A0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0688 [0x2B0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0704 [0x2C0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0720 [0x2D0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0736 [0x2E0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0752 [0x2F0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0768 [0x300]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0784 [0x310]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0800 [0x320]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0816 [0x330]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0832 [0x340]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0848 [0x350]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0864 [0x360]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0880 [0x370]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0896 [0x380]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0912 [0x390]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0928 [0x3A0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0944 [0x3B0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0960 [0x3C0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0976 [0x3D0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 0992 [0x3E0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1008 [0x3F0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1024 [0x400]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1040 [0x410]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1056 [0x420]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1072 [0x430]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1088 [0x440]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1104 [0x450]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1120 [0x460]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1136 [0x470]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1152 [0x480]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1168 [0x490]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1184 [0x4A0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1200 [0x4B0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1216 [0x4C0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1232 [0x4D0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1248 [0x4E0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1264 [0x4F0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1280 [0x500]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1296 [0x510]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1312 [0x520]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1328 [0x530]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1344 [0x540]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1360 [0x550]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1376 [0x560]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1392 [0x570]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1408 [0x580]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1424 [0x590]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1440 [0x5A0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1456 [0x5B0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1472 [0x5C0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1488 [0x5D0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1504 [0x5E0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1520 [0x5F0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Offset 1536 [0x600]: 00 00 00 00
+
 # 2026-10-07
 
 **Did** - I have switched to dynamic memory allocation. I was avoiding it for sometime on purpose. I am trying to implement a functionality. Read the table catalog when the db engine starts. When saving table to disk, the catalog will be updated. When reading catalog from a binary file, how to decide what should be the size of the catalog. The catalog is an arrya of TableSchema objects. How many objects are there?? Easy solution. Check the size of the entire catalog file. That is the number of bytes used to store the entire catalog. We can use sizeof to get the sizeof the TableSchema object. Divide total/element_size, we get the number of elemetns. Brilliant....Now I shoot myself in the foot. Apparently, I cannot define an array of size = some variable that will hold that value. That is variable length array or VLA. No No No No No No. There probably a way to do this, but I am not smart enough for this. Life is too short. Time to embrace this new journey. Dynamic Memory allocation. Malloc and stuff. Excited. It does make life easy. No long need to define max length of columns, catalog, string lengths etc.
