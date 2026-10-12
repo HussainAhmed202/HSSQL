@@ -3,7 +3,31 @@
 #include <string.h>
 #include "parser.h"
 
-TableSchema *load_catalog_from_disk(char *object_name, TableSchema *object)
+void print_schema_bytes(const TableSchema *schema)
+{
+    const unsigned char *bytes = (const unsigned char *)schema;
+    size_t size = sizeof(TableSchema);
+
+    printf("=== DUMPING RAW MEMORY FOR TableSchema (%zu bytes) ===\n", size);
+
+    for (size_t i = 0; i < size; i++)
+    {
+        // Print memory offset
+        if (i % 16 == 0)
+        {
+            printf("\nOffset %04zu [0x%03zX]: ", i, i);
+        }
+
+        // Print hex byte value
+        printf("%02X ", bytes[i]);
+
+        // Print human-readable character alongside if printable ASCII
+        // (helps you spot where "transaction", "id", or "NUMBER" actually live)
+    }
+    printf("\n=======================================================\n");
+}
+
+TableSchema *load_catalog_from_disk(char *object_name, size_t *table_count)
 {
     char file_path[512];
 
@@ -11,6 +35,7 @@ TableSchema *load_catalog_from_disk(char *object_name, TableSchema *object)
     if (bytes_written < 0 || bytes_written >= sizeof(file_path))
     {
         printf("Error: File path exceeds max buffer length.\n");
+        *table_count = 0;
         return NULL;
     }
 
@@ -18,6 +43,7 @@ TableSchema *load_catalog_from_disk(char *object_name, TableSchema *object)
     if (fp == NULL)
     {
         printf("Failed to open catalog file '%s'\n", file_path);
+        *table_count = 0;
         return NULL;
     }
 
@@ -31,11 +57,11 @@ TableSchema *load_catalog_from_disk(char *object_name, TableSchema *object)
     printf("Total file size: %ld bytes\n", total_bytes);
     printf("Number of tables: %zu\n", count);
 
-    // 3. Allocate heap memory for the array of structs
     TableSchema *catalog = malloc(sizeof(TableSchema) * count);
     if (!catalog)
     {
         fclose(fp);
+        *table_count = 0;
         return NULL;
     }
 
@@ -43,6 +69,7 @@ TableSchema *load_catalog_from_disk(char *object_name, TableSchema *object)
     fread(catalog, sizeof(TableSchema), count, fp);
     fclose(fp);
 
+    *table_count = count;
     return catalog;
 }
 
@@ -57,14 +84,14 @@ int write_catalog_to_disk(char *object_name, TableSchema *object, size_t size)
         return -1;
     }
 
-    FILE *fp = fopen(file_path, "w");
+    FILE *fp = fopen(file_path, "wb");
     if (fp == NULL)
     {
         printf("Failed to open catalog file '%s'\n", file_path);
         return -1;
     }
 
-    size_t written = fwrite(&object, sizeof(TableSchema), size, fp);
+    size_t written = fwrite(object, sizeof(TableSchema), size, fp);
     fclose(fp);
     return written;
 }
@@ -94,14 +121,33 @@ TableSchema *find_table_in_catalog(TableSchema catalog[], int num_tables, const 
 }
 int main()
 {
-    // int num_of_tables = 0;
+
+    size_t num_of_tables = 0;
+
     // TableSchema *schema1 = malloc(sizeof(TableSchema) * 5);
 
     // // hssql>CREATE TABLE user(NUMBER id, VARCHAR2 name)
     // TableSchema table1 = {
-    //     "user",
-    //     {{"id", "NUMBER"}, {"name", "VARCHAR2"}},
-    //     2};
+    //     .table_name = "user",
+    //     .columns = {
+    //         {.col_name = "id", .col_type = "NUMBER"},
+    //         {.col_name = "name", .col_type = "VARCHAR2"}},
+    //     .num_columns = 2};
+
+    // TableSchema table1;
+    // memset(&table1, 0, sizeof(TableSchema)); // Zero out all 1540 bytes first!
+
+    // strncpy(table1.table_name, "transactions", sizeof(table1.table_name) - 1);
+    // table1.num_columns = 2;
+
+    // // Column 0
+    // strncpy(table1.columns[0].col_name, "id", sizeof(table1.columns[0].col_name) - 1);
+    // strncpy(table1.columns[0].col_type, "NUMBER", sizeof(table1.columns[0].col_type) - 1);
+
+    // // Column 1
+    // strncpy(table1.columns[1].col_name, "amount", sizeof(table1.columns[1].col_name) - 1);
+    // strncpy(table1.columns[1].col_type, "DOUBLE", sizeof(table1.columns[1].col_type) - 1);
+    // printf("Size of a Table 1 %zu\n", sizeof(table1));
 
     // if (add_table_to_catalog(schema1, &num_of_tables, table1) == -1)
     // {
@@ -111,9 +157,11 @@ int main()
 
     // // CREATE TABLE transactions(NUMBER id, DOUBLE amount)
     // TableSchema table2 = {
-    //     "transaction",
-    //     {{"id", "NUMBER"}, {"amount", "DOUBLE"}},
-    //     2};
+    //     .table_name = "transaction",
+    //     .columns = {{"id", "NUMBER"}, {"amount", "DOUBLE"}},
+    //     .num_columns = 2};
+
+    // printf("Size of a Table 2 %zu\n", sizeof(table2));
 
     // if (add_table_to_catalog(schema1, &num_of_tables, table2) == -1)
     // {
@@ -121,11 +169,11 @@ int main()
     //     return -1;
     // }
 
-    // // CREATE TABLE bank(NUMBER id, Number user_id, DOUBLE amount, VARCHAR2 user_name)
+    // CREATE TABLE bank(NUMBER id, Number user_id, DOUBLE amount, VARCHAR2 user_name)
     // TableSchema table3 = {
-    //     "bank",
-    //     {{"id", "NUMBER"}, {"user_id", "NUMBER"}, {"amount", "DOUBLE"}, {"name", "VARCHAR2"}},
-    //     4};
+    //     .table_name = "bank",
+    //     .columns = {{"id", "NUMBER"}, {"user_id", "NUMBER"}, {"amount", "DOUBLE"}, {"name", "VARCHAR2"}},
+    //     .num_columns = 4};
 
     // if (add_table_to_catalog(schema1, &num_of_tables, table3) == -1)
     // {
@@ -133,25 +181,67 @@ int main()
     //     return -1;
     // }
 
-    // for (int i = 0; i < num_of_tables; i++)
-    // {
-    //     printf("Table name: %s\n", schema1[i].table_name);
-    //     printf("Total number of columns %d\n", schema1[i].num_columns);
-    //     for (int j = 0; j < schema1[i].num_columns; j++)
-    //     {
-    //         printf("Column[%d].col_name -> %s\n", i, schema1[i].columns[j].col_name);
-    //         printf("Column[%d].col_type -> %s\n", i, schema1[i].columns[j].col_type);
-    //     }
-    // }
+    // // for (int i = 0; i < num_of_tables; i++)
+    // // {
+    // //     printf("Table name: %s\n", schema1[i].table_name);
+    // //     printf("Total number of columns %d\n", schema1[i].num_columns);
+    // //     for (int j = 0; j < schema1[i].num_columns; j++)
+    // //     {
+    // //         printf("Column[%d].col_name -> %s\n", i, schema1[i].columns[j].col_name);
+    // //         printf("Column[%d].col_type -> %s\n", i, schema1[i].columns[j].col_type);
+    // //     }
+    // // }
 
-    // TableSchema *found_table = find_table_in_catalog(schema1, num_of_tables, "user");
-    // if (found_table != NULL)
+    // // TableSchema *found_table = find_table_in_catalog(schema1, num_of_tables, "user");
+    // // if (found_table != NULL)
+    // // {
+    // //     printf("Found: %s\n", found_table->table_name);
+    // // }
+    // // else
+    // // {
+    // //     printf("Table not found\n");
+    // // }
+
+    // if (write_catalog_to_disk("schema1", schema1, num_of_tables) == num_of_tables)
     // {
-    //     printf("Found: %s\n", found_table->table_name);
+    //     printf("Success\n");
     // }
     // else
     // {
-    //     printf("Table not found\n");
+    //     printf("Fail\n");
+    // }
+
+    // free(schema1);
+
+    TableSchema *schema1 = load_catalog_from_disk("schema1", &num_of_tables);
+    if (schema1 != NULL)
+    {
+        printf("Size of one Schema: %zu\n", sizeof(*schema1));
+        printf("%s\n", schema1[0].table_name);
+        print_schema_bytes(&schema1[0]);
+    }
+    // if (schema1 != NULL)
+    // {
+    //     for (size_t i = 0; i < num_of_tables; i++)
+    //     {
+    //         printf("Table name: %s\n", schema1[i].table_name);
+    //         printf("Total number of columns %d\n", schema1[i].num_columns);
+    //         for (int j = 0; j < schema1[i].num_columns; j++)
+    //         {
+    //             printf("Column[%d].col_name -> %s\n", i, schema1[i].columns[j].col_name);
+    //             printf("Column[%d].col_type -> %s\n", i, schema1[i].columns[j].col_type);
+    //         }
+    //     }
+
+    // TableSchema table4 = {
+    //     "user",
+    //     {{"id", "NUMBER"}, {"name", "VARCHAR2"}},
+    //     2};
+
+    // if (add_table_to_catalog(schema1, &num_of_tables, table4) == -1)
+    // {
+    //     printf("Memory full - No more tables can be created");
+    //     return -1;
     // }
 
     // if (write_catalog_to_disk("schema1", schema1, num_of_tables) == num_of_tables)
@@ -163,7 +253,8 @@ int main()
     //     printf("Fail\n");
     // }
 
-    free(schema1);
+    //     free(schema1);
+    // }
 
     return 0;
 }
