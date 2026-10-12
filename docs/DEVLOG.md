@@ -124,6 +124,20 @@ Offset 1504 [0x5E0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 Offset 1520 [0x5F0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 Offset 1536 [0x600]: 00 00 00 00
 
+TableSchema
+char table_name[35];
+Column columns[10];
+int num_columns;
+
+Column
+char col_name[100];
+char col_type[50];
+
+Size taken by one TableSchema object in memory
+= 35 + 10 X (sizeof(Column)) + 4 [int take 4 Bytes]
+= 35 + 10 X (100 + 50) + 4
+= 1540 Bytes.
+
 # 2026-10-07
 
 **Did** - I have switched to dynamic memory allocation. I was avoiding it for sometime on purpose. I am trying to implement a functionality. Read the table catalog when the db engine starts. When saving table to disk, the catalog will be updated. When reading catalog from a binary file, how to decide what should be the size of the catalog. The catalog is an arrya of TableSchema objects. How many objects are there?? Easy solution. Check the size of the entire catalog file. That is the number of bytes used to store the entire catalog. We can use sizeof to get the sizeof the TableSchema object. Divide total/element_size, we get the number of elemetns. Brilliant....Now I shoot myself in the foot. Apparently, I cannot define an array of size = some variable that will hold that value. That is variable length array or VLA. No No No No No No. There probably a way to do this, but I am not smart enough for this. Life is too short. Time to embrace this new journey. Dynamic Memory allocation. Malloc and stuff. Excited. It does make life easy. No long need to define max length of columns, catalog, string lengths etc.
