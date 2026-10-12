@@ -3,30 +3,6 @@
 #include <string.h>
 #include "parser.h"
 
-void print_schema_bytes(const TableSchema *schema)
-{
-    const unsigned char *bytes = (const unsigned char *)schema;
-    size_t size = sizeof(TableSchema);
-
-    printf("=== DUMPING RAW MEMORY FOR TableSchema (%zu bytes) ===\n", size);
-
-    for (size_t i = 0; i < size; i++)
-    {
-        // Print memory offset
-        if (i % 16 == 0)
-        {
-            printf("\nOffset %04zu [0x%03zX]: ", i, i);
-        }
-
-        // Print hex byte value
-        printf("%02X ", bytes[i]);
-
-        // Print human-readable character alongside if printable ASCII
-        // (helps you spot where "transaction", "id", or "NUMBER" actually live)
-    }
-    printf("\n=======================================================\n");
-}
-
 TableSchema *load_catalog_from_disk(char *object_name, size_t *table_count)
 {
     char file_path[512];
@@ -218,7 +194,6 @@ int main()
     {
         printf("Size of one Schema: %zu\n", sizeof(*schema1));
         printf("%s\n", schema1[0].table_name);
-        print_schema_bytes(&schema1[0]);
     }
     // if (schema1 != NULL)
     // {
