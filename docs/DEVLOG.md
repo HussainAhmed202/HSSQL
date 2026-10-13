@@ -1,5 +1,9 @@
 # Devlog
 
+# 2026-10-13
+
+**Did** - Added append functionality to the catalog. Created a new function, updated_catalog_to_disk in the catalog.c file. This function takes in a TableSchema object and appends it to the catalog. This function is meant to be called after a table is added to the catalog in memory. Once, succesfully added, then this function will be called which will write it to disk. The previous function write_catalog_to_disk still exists. This opens the file in write mode. Therefore, this function will be used incase the catalog gets corrupted. In that case, the catalog will be re-created.
+
 # 2026-10-12
 
 **Problem** - I can write a TableSchema successfully to a binary file. But cannot read correctly. Turns out, when structus are stored, the compiler adds padding to make it easier for the cpu to access. For example,
@@ -232,7 +236,7 @@ Offset 1520 [0x5F0]: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 number_of_columns
 Offset 1536 [0x600]: 00 00 00 00
 
-**Did** - Above, it can be noticed that for table_name, garbage values are there. The bug was in the writing to file code. The method **_fwrite_** takes in a pointer. In the function, TableSchema pointer was passed. But then the address of this pointer was being passed. Therefore, fwrite was writing from the start of the pointer's memory address to 1054 Bytes. It just happens that other values that are to be there like column name and type happen to be there. Please, also notice, how the values were shifted.
+**Did** - Above, it can be noticed that for table*name, garbage values are there. The bug was in the writing to file code. The method \*\*\_fwrite*\*\* takes in a pointer. In the function, TableSchema pointer was passed. But then the address of this pointer was being passed. Therefore, fwrite was writing from the start of the pointer's memory address to 1054 Bytes. It just happens that other values that are to be there like column name and type happen to be there. Please, also notice, how the values were shifted.
 
 # 2026-10-07
 
