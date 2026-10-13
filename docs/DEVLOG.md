@@ -1,5 +1,13 @@
 # Devlog
 
+# 2026-10-14
+
+**Problem** - The append_table_catalog_in_disk function seems to be not working. The program is actinvg weirdly. The file is not being written.
+
+**Did** - The program was behaving abruptly because of writing over unallocated heap space. I was read a binary file which is empty. In the function, load_catalog_from_disk, it assing a portion of heap memory to the catalog. The size is sizeof(TableSchema) \* num_of_tables. Because the file is empty, nothing gets assigned. The catalog is returned of size 0. Then the add_table_to_catalog function is called which tries to add a TableSchema to a catalog which is of size 0. This is overwriting the allocated heap space. The shooting myself in the foot here is that the program doesnt crash. It was working separately but now it isint. Need to be careful.
+
+**Future** - Write now, using a fixed size catalog lenght. The catalog can take upto 5 tables. The total size of the catalog will also be of 5 tables. Even if, there are only 2 tables in the schema. Need to make this more dynamic. Next stop is realloc.
+
 # 2026-10-13
 
 **Did** - Added append functionality to the catalog. Created a new function, updated_catalog_to_disk in the catalog.c file. This function takes in a TableSchema object and appends it to the catalog. This function is meant to be called after a table is added to the catalog in memory. Once, succesfully added, then this function will be called which will write it to disk. The previous function write_catalog_to_disk still exists. This opens the file in write mode. Therefore, this function will be used incase the catalog gets corrupted. In that case, the catalog will be re-created.
