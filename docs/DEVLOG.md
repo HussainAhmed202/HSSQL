@@ -1,5 +1,9 @@
 # Devlog
 
+# 2026-10-15
+
+**Did** - Created a new struct Catalog. It contains the members, TableSchema pointer, number of tables, max capacity. Addin realloc to add dynamic expansion of the catalog. Intially, the max capacity is 5 tables. Once full, the realloc will expand it. Updated load_catalog_from_disk and add_table_to_catalog functions. These now take in catalog pointer.
+
 # 2026-10-14
 
 **Problem** - The append_table_catalog_in_disk function seems to be not working. The program is actinvg weirdly. The file is not being written.
