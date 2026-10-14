@@ -3,23 +3,22 @@
 #include <string.h>
 #include "parser.h"
 
-TableSchema *load_catalog_from_disk(char *database_name, size_t *table_count)
+typedef struct Catalog
+{
+    int num_of_tables;
+    int max_capacity;
+    TableSchema *table_list;
+} Catalog;
+
+TableSchema *load_catalog_from_disk(char *database_name, Catalog *catalog)
 {
     char file_path[512];
-
-    int bytes_written = snprintf(file_path, sizeof(file_path), "data/db/%s/catalog.dat", database_name);
-    if (bytes_written < 0 || bytes_written >= sizeof(file_path))
-    {
-        printf("Error: File path exceeds max buffer length.\n");
-        *table_count = 0;
-        return NULL;
-    }
-
+    snprintf(file_path, sizeof(file_path), "data/%s/catalog.dat", database_name);
     FILE *fp = fopen(file_path, "rb");
     if (fp == NULL)
     {
         printf("Failed to open catalog file '%s'\n", file_path);
-        *table_count = 0;
+        catalog->num_of_tables = 0;
         return NULL;
     }
 
@@ -29,25 +28,31 @@ TableSchema *load_catalog_from_disk(char *database_name, size_t *table_count)
 
     // 2. Calculate the number of elements
     size_t count = total_bytes / sizeof(TableSchema);
-
     printf("Total file size: %ld bytes\n", total_bytes);
     printf("Number of tables: %zu\n", count);
 
-    // TableSchema *catalog = malloc(sizeof(TableSchema) * count);
-    TableSchema *catalog = malloc(sizeof(TableSchema) * 5);
-    if (!catalog)
+    if (total_bytes == 0)
+    {
+        // catalog file is empty
+        // create an empty catalog that can hold upto 5 tables
+        TableSchema *ptr = malloc(sizeof(TableSchema) * catalog->max_capacity);
+    }
+    TableSchema *ptr = malloc(sizeof(TableSchema) * count);
+    catalog->max_capacity = count;
+
+    if (!ptr)
     {
         fclose(fp);
-        *table_count = 0;
+        catalog->num_of_tables = 0;
         return NULL;
     }
 
     // 4. Read array from disk
-    fread(catalog, sizeof(TableSchema), count, fp);
+    fread(ptr, sizeof(TableSchema), count, fp);
     fclose(fp);
 
-    *table_count = count;
-    return catalog;
+    catalog->num_of_tables = count;
+    return ptr;
 }
 
 int append_table_catalog_in_disk(char *database_name, TableSchema *object)
@@ -61,22 +66,13 @@ int append_table_catalog_in_disk(char *database_name, TableSchema *object)
         return -1;
     }
 
-    printf("File path valid\n");
-
     FILE *fp = fopen(file_path, "ab");
     if (fp == NULL)
     {
         printf("Failed to open catalog file '%s'\n", file_path);
         return -1;
     }
-    printf("%p\n", fp);
-    printf("File opened successfully\n");
-
     size_t written = fwrite(object, sizeof(TableSchema), 1, fp);
-
-    printf("Table written successfully\n");
-
-    printf("%zu\n", written);
     fclose(fp);
     return written;
 }
@@ -105,16 +101,17 @@ int write_catalog_to_disk(char *database_name, TableSchema *object, size_t size)
     return written;
 }
 
-int add_table_to_catalog(TableSchema catalog[], size_t *num_tables, TableSchema new_table)
+int add_table_to_catalog(Catalog *catalog, TableSchema new_table)
 {
-    if (*num_tables == 5)
+    if (catalog->num_of_tables == catalog->max_capacity)
     {
+        printf("In memory catalog is full\n");
         return -1; // memory full
     }
 
-    // returns the number of tables stored in the database catalog
-    catalog[*num_tables] = new_table;
-    return ++*num_tables;
+    catalog->table_list[catalog->num_of_tables] = new_table;
+    catalog->num_of_tables++;
+    return 1;
 }
 
 TableSchema *find_table_in_catalog(TableSchema catalog[], int num_tables, const char table_name[])
@@ -128,26 +125,80 @@ TableSchema *find_table_in_catalog(TableSchema catalog[], int num_tables, const 
     }
     return NULL;
 }
+
 int main()
 {
+    Catalog catalog;
+    catalog.num_of_tables = 0;
+    catalog.max_capacity = 5;
 
-    size_t num_of_tables = 0;
+    // user connects to a database.
+    // that specific database catalog loaded.
 
-    // TableSchema *schema1 = malloc(sizeof(TableSchema) * 5);
+    TableSchema *ptr = load_catalog_from_disk("db1", &catalog);
+    if (ptr == NULL)
+    {
+        printf("Something went wrong\n");
+    }
+    catalog.table_list = ptr;
+    ptr = NULL;
 
-    // // hssql>CREATE TABLE user(NUMBER id, VARCHAR2 name)
-    // TableSchema table1 = {
-    //     .table_name = "user",
-    //     .columns = {
-    //         {.col_name = "id", .col_type = "NUMBER"},
-    //         {.col_name = "name", .col_type = "VARCHAR2"}},
-    //     .num_columns = 2};
+    // hssql>CREATE TABLE user(NUMBER id, VARCHAR2 name)
+    TableSchema table1 = {
+        .table_name = "user",
+        .columns = {
+            {.col_name = "id", .col_type = "NUMBER"},
+            {.col_name = "name", .col_type = "VARCHAR2"}},
+        .num_columns = 2};
 
-    // if (add_table_to_catalog(schema1, &num_of_tables, table1) == -1)
-    // {
-    //     printf("Memory full - No more tables can be created");
-    //     return -1;
-    // }
+    if (add_table_to_catalog(&catalog, table1) == -1)
+    {
+        printf("Memory full - No more tables can be created");
+        return -1;
+    }
+
+    // CREATE TABLE transactions(NUMBER id, DOUBLE amount)
+    TableSchema table2 = {
+        .table_name = "transaction",
+        .columns = {{"id", "NUMBER"}, {"amount", "DOUBLE"}},
+        .num_columns = 2};
+
+    if (add_table_to_catalog(&catalog, table2) == -1)
+    {
+        printf("Memory full - No more tables can be created");
+        return -1;
+    }
+
+    // CREATE TABLE bank(NUMBER id, Number user_id, DOUBLE amount, VARCHAR2 user_name)
+    TableSchema table3 = {
+        .table_name = "bank",
+        .columns = {{"id", "NUMBER"}, {"user_id", "NUMBER"}, {"amount", "DOUBLE"}, {"name", "VARCHAR2"}},
+        .num_columns = 4};
+
+    if (add_table_to_catalog(&catalog, table3) == -1)
+    {
+        printf("Memory full - No more tables can be created");
+        return -1;
+    }
+
+    if (add_table_to_catalog(&catalog, table3) == -1)
+    {
+        printf("Memory full - No more tables can be created");
+        return -1;
+    }
+
+    if (add_table_to_catalog(&catalog, table3) == -1)
+    {
+        printf("Memory full - No more tables can be created");
+        return -1;
+    }
+
+    if (add_table_to_catalog(&catalog, table3) == -1)
+    {
+        printf("Memory full - No more tables can be created");
+        return -1;
+    }
+
     // else
     // {
     //     // table successfully added to the catalog in memory. Not permanent.
@@ -214,35 +265,33 @@ int main()
 
     // free(schema1);
 
-    TableSchema *schema1 = load_catalog_from_disk("schema1", &num_of_tables);
-    if (schema1 != NULL)
-    {
-        printf("Lets go\n");
-        printf("%zu\n", sizeof(*schema1));
-        // hssql > CREATE TABLE user(NUMBER id, VARCHAR2 name)
-        TableSchema table1 = {
-            .table_name = "user",
-            .columns = {
-                {.col_name = "id", .col_type = "NUMBER"},
-                {.col_name = "name", .col_type = "VARCHAR2"}},
-            .num_columns = 2};
+    //     TableSchema *schema1 = load_catalog_from_disk("schema1", &num_of_tables);
+    //     if (schema1 != NULL)
+    //     {
+    //         // hssql > CREATE TABLE user(NUMBER id, VARCHAR2 name)
+    //         TableSchema table1 = {
+    //             .table_name = "user",
+    //             .columns = {
+    //                 {.col_name = "id", .col_type = "NUMBER"},
+    //                 {.col_name = "name", .col_type = "VARCHAR2"}},
+    //             .num_columns = 2};
 
-        if (add_table_to_catalog(schema1, &num_of_tables, table1) == -1)
-        {
-            printf("Memory full - No more tables can be created");
-            return -1;
-        }
-        printf("Table added to catalog in memory\n");
+    //         if (add_table_to_catalog(schema1, &num_of_tables, table1) == -1)
+    //         {
+    //             printf("Memory full - No more tables can be created");
+    //             return -1;
+    //         }
+    //         printf("Table added to catalog in memory\n");
 
-        // table successfully added to the catalog in memory. Not permanent.
-        if (append_table_catalog_in_disk("schema1", &table1) == -1)
-        {
-            printf("Error storing table to memory");
-            return -1;
-        }
-        printf("Table Schema updated in memory");
-    }
-    free(schema1);
+    //         // table successfully added to the catalog in memory. Not permanent.
+    //         if (append_table_catalog_in_disk("schema1", &table1) == -1)
+    //         {
+    //             printf("Error storing table to memory");
+    //             return -1;
+    //         }
+    //         printf("Table Schema updated in memory");
+    //     }
+    //     free(schema1);
 
     return 0;
 }
