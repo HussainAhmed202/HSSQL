@@ -100,8 +100,17 @@ int write_catalog_to_disk(char *database_name, TableSchema *object, size_t size)
     return written;
 }
 
-int add_table_to_catalog(Catalog *catalog, TableSchema new_table)
+int add_table_to_catalog(char *database_name, Catalog *catalog, TableSchema new_table)
 {
+    char file_path[512];
+
+    int bytes_written = snprintf(file_path, sizeof(file_path), "data/%s/catalog.dat", database_name);
+    if (bytes_written < 0 || bytes_written >= sizeof(file_path))
+    {
+        printf("Error: File path exceeds max buffer length.\n");
+        return -1;
+    }
+
     if (catalog->num_of_tables == catalog->max_capacity)
     {
         // extend the in-memory catalog
@@ -118,7 +127,19 @@ int add_table_to_catalog(Catalog *catalog, TableSchema new_table)
 
     catalog->table_list[catalog->num_of_tables] = new_table;
     catalog->num_of_tables++;
-    return 1;
+
+    FILE *fp = fopen(file_path, "ab");
+    if (fp == NULL)
+    {
+        printf("Failed to open catalog file '%s'\n", file_path);
+        return -1;
+    }
+
+    size_t written = fwrite(&new_table, sizeof(TableSchema), 1, fp);
+    fclose(fp);
+    return written;
+
+    // return 1;
 }
 
 TableSchema *find_table_in_catalog(TableSchema catalog[], int num_tables, const char table_name[])
@@ -158,7 +179,7 @@ int main()
             {.col_name = "name", .col_type = "VARCHAR2"}},
         .num_columns = 2};
 
-    if (add_table_to_catalog(&catalog, table1) == -1)
+    if (add_table_to_catalog("db1", &catalog, table1) == -1)
     {
         printf("Memory full - No more tables can be created");
         return -1;
@@ -171,7 +192,7 @@ int main()
         .columns = {{"id", "NUMBER"}, {"amount", "DOUBLE"}},
         .num_columns = 2};
 
-    if (add_table_to_catalog(&catalog, table2) == -1)
+    if (add_table_to_catalog("db1", &catalog, table2) == -1)
     {
         printf("Memory full - No more tables can be created");
         return -1;
@@ -184,28 +205,21 @@ int main()
         .columns = {{"id", "NUMBER"}, {"user_id", "NUMBER"}, {"amount", "DOUBLE"}, {"name", "VARCHAR2"}},
         .num_columns = 4};
 
-    if (add_table_to_catalog(&catalog, table3) == -1)
+    if (add_table_to_catalog("db1", &catalog, table3) == -1)
     {
         printf("Memory full - No more tables can be created");
         return -1;
     }
     printf("Table added\n");
 
-    if (add_table_to_catalog(&catalog, table3) == -1)
+    if (add_table_to_catalog("db1", &catalog, table3) == -1)
     {
         printf("Memory full - No more tables can be created");
         return -1;
     }
     printf("Table added\n");
 
-    if (add_table_to_catalog(&catalog, table3) == -1)
-    {
-        printf("Memory full - No more tables can be created");
-        return -1;
-    }
-    printf("Table added\n");
-
-    if (add_table_to_catalog(&catalog, table3) == -1)
+    if (add_table_to_catalog("db1", &catalog, table3) == -1)
     {
         printf("Memory full - No more tables can be created");
         return -1;
