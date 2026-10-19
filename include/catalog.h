@@ -1,15 +1,33 @@
 #ifndef CATALOG_H
 #define CATALOG_H
 
-#include "parser.h"
+typedef struct Catalog
+{
+    int num_of_tables;
+    int max_capacity;
+    TableSchema *table_list;
+} Catalog;
 
-// Adds a table to the catalog.
-// Returns the number of tables currently stored,
-// or -1 if the catalog is full.
-int add_table_to_catalog(TableSchema catalog[], int *num_tables, TableSchema new_table);
+/* Load the catalog from disk into memory */
+TableSchema *load_catalog_from_disk(
+    char *database_name,
+    Catalog *catalog);
 
-// Finds a table by name.
-// Returns a pointer to the table if found,
-// otherwise returns NULL.
-TableSchema *find_table_by_name(TableSchema catalog[], int num_tables, const char table_name[]);
+/* Write the entire catalog to disk */
+int write_catalog_to_disk(
+    char *database_name,
+    TableSchema *object,
+    size_t size);
+
+/* Add a table to the in-memory catalog and persist it */
+int add_table_to_catalog(
+    char *database_name,
+    Catalog *catalog,
+    TableSchema new_table);
+
+/* Find a table by name */
+TableSchema *find_table_in_catalog(
+    Catalog *catalog,
+    char *table_name);
+
 #endif
