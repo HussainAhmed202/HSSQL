@@ -122,7 +122,6 @@ TableSchema *find_table_in_catalog(Catalog *catalog, char *table_name)
 {
     for (int i = 0; i < catalog->num_of_tables; i++)
     {
-        printf("Catalog table name = %s\n", catalog->table_list->table_name);
         if (strcmp(catalog->table_list->table_name, table_name) == 0)
         {
             return &catalog->table_list[i];
