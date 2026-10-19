@@ -34,19 +34,18 @@ TableSchema *load_catalog_from_disk(char *database_name, Catalog *catalog)
     if (total_bytes == 0)
     {
         // catalog file is empty
-        // create an empty catalog that can hold upto 5 tables
+        // return catalog with an empty list of tables
         TableSchema *ptr = malloc(sizeof(TableSchema) * catalog->max_capacity);
+        return ptr;
     }
     TableSchema *ptr = malloc(sizeof(TableSchema) * count);
     catalog->max_capacity = count;
-
     if (!ptr)
     {
         fclose(fp);
         catalog->num_of_tables = 0;
         return NULL;
     }
-
     // 4. Read array from disk
     fread(ptr, sizeof(TableSchema), count, fp);
     fclose(fp);
@@ -105,8 +104,16 @@ int add_table_to_catalog(Catalog *catalog, TableSchema new_table)
 {
     if (catalog->num_of_tables == catalog->max_capacity)
     {
-        printf("In memory catalog is full\n");
-        return -1; // memory full
+        // extend the in-memory catalog
+        size_t new_count = catalog->max_capacity * 2;
+        TableSchema *ptr = realloc(catalog->table_list, new_count * sizeof(TableSchema));
+        if (ptr == NULL)
+        {
+            printf("Error in extending the catalog\n");
+            return -1;
+        }
+        catalog->table_list = ptr; // new extended piece of memory
+        ptr = NULL;
     }
 
     catalog->table_list[catalog->num_of_tables] = new_table;
@@ -138,7 +145,7 @@ int main()
     TableSchema *ptr = load_catalog_from_disk("db1", &catalog);
     if (ptr == NULL)
     {
-        printf("Something went wrong\n");
+        printf("Catalog file is empty\n");
     }
     catalog.table_list = ptr;
     ptr = NULL;
@@ -156,6 +163,7 @@ int main()
         printf("Memory full - No more tables can be created");
         return -1;
     }
+    printf("Table added\n");
 
     // CREATE TABLE transactions(NUMBER id, DOUBLE amount)
     TableSchema table2 = {
@@ -168,6 +176,7 @@ int main()
         printf("Memory full - No more tables can be created");
         return -1;
     }
+    printf("Table added\n");
 
     // CREATE TABLE bank(NUMBER id, Number user_id, DOUBLE amount, VARCHAR2 user_name)
     TableSchema table3 = {
@@ -180,24 +189,28 @@ int main()
         printf("Memory full - No more tables can be created");
         return -1;
     }
+    printf("Table added\n");
 
     if (add_table_to_catalog(&catalog, table3) == -1)
     {
         printf("Memory full - No more tables can be created");
         return -1;
     }
+    printf("Table added\n");
 
     if (add_table_to_catalog(&catalog, table3) == -1)
     {
         printf("Memory full - No more tables can be created");
         return -1;
     }
+    printf("Table added\n");
 
     if (add_table_to_catalog(&catalog, table3) == -1)
     {
         printf("Memory full - No more tables can be created");
         return -1;
     }
+    printf("Table added\n");
 
     // else
     // {
