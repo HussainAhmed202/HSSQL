@@ -28,8 +28,8 @@ TableSchema *load_catalog_from_disk(char *database_name, Catalog *catalog)
 
     // 2. Calculate the number of elements
     size_t count = total_bytes / sizeof(TableSchema);
-    printf("Total file size: %ld bytes\n", total_bytes);
-    printf("Number of tables: %zu\n", count);
+    // printf("Total file size: %ld bytes\n", total_bytes);
+    // printf("Number of tables: %zu\n", count);
 
     if (total_bytes == 0)
     {
@@ -122,6 +122,7 @@ TableSchema *find_table_in_catalog(Catalog *catalog, char *table_name)
 {
     for (int i = 0; i < catalog->num_of_tables; i++)
     {
+        printf("Catalog table name = %s\n", catalog->table_list->table_name);
         if (strcmp(catalog->table_list->table_name, table_name) == 0)
         {
             return &catalog->table_list[i];
