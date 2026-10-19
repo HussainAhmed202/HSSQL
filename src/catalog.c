@@ -130,171 +130,171 @@ TableSchema *find_table_in_catalog(Catalog *catalog, char *table_name)
     return NULL;
 }
 
-int main()
-{
-    Catalog catalog;
-    catalog.num_of_tables = 0;
-    catalog.max_capacity = 5;
+// int main()
+// {
+//     Catalog catalog;
+//     catalog.num_of_tables = 0;
+//     catalog.max_capacity = 5;
 
-    // user connects to a database.
-    // that specific database catalog loaded.
+//     // user connects to a database.
+//     // that specific database catalog loaded.
 
-    TableSchema *ptr = load_catalog_from_disk("db1", &catalog);
-    if (ptr == NULL)
-    {
-        printf("Catalog file is empty\n");
-    }
-    catalog.table_list = ptr;
-    ptr = NULL;
+//     TableSchema *ptr = load_catalog_from_disk("db1", &catalog);
+//     if (ptr == NULL)
+//     {
+//         printf("Catalog file is empty\n");
+//     }
+//     catalog.table_list = ptr;
+//     ptr = NULL;
 
-    // // hssql>CREATE TABLE user(NUMBER id, VARCHAR2 name)
-    // TableSchema table1 = {
-    //     .table_name = "user",
-    //     .columns = {
-    //         {.col_name = "id", .col_type = "NUMBER"},
-    //         {.col_name = "name", .col_type = "VARCHAR2"}},
-    //     .num_columns = 2};
+// // hssql>CREATE TABLE user(NUMBER id, VARCHAR2 name)
+// TableSchema table1 = {
+//     .table_name = "user",
+//     .columns = {
+//         {.col_name = "id", .col_type = "NUMBER"},
+//         {.col_name = "name", .col_type = "VARCHAR2"}},
+//     .num_columns = 2};
 
-    // if (add_table_to_catalog("db1", &catalog, table1) == -1)
-    // {
-    //     printf("Memory full - No more tables can be created");
-    //     return -1;
-    // }
-    // printf("Table added\n");
+// if (add_table_to_catalog("db1", &catalog, table1) == -1)
+// {
+//     printf("Memory full - No more tables can be created");
+//     return -1;
+// }
+// printf("Table added\n");
 
-    // // CREATE TABLE transactions(NUMBER id, DOUBLE amount)
-    // TableSchema table2 = {
-    //     .table_name = "transaction",
-    //     .columns = {{"id", "NUMBER"}, {"amount", "DOUBLE"}},
-    //     .num_columns = 2};
+// // CREATE TABLE transactions(NUMBER id, DOUBLE amount)
+// TableSchema table2 = {
+//     .table_name = "transaction",
+//     .columns = {{"id", "NUMBER"}, {"amount", "DOUBLE"}},
+//     .num_columns = 2};
 
-    // if (add_table_to_catalog("db1", &catalog, table2) == -1)
-    // {
-    //     printf("Memory full - No more tables can be created");
-    //     return -1;
-    // }
-    // printf("Table added\n");
+// if (add_table_to_catalog("db1", &catalog, table2) == -1)
+// {
+//     printf("Memory full - No more tables can be created");
+//     return -1;
+// }
+// printf("Table added\n");
 
-    // // CREATE TABLE bank(NUMBER id, Number user_id, DOUBLE amount, VARCHAR2 user_name)
-    // TableSchema table3 = {
-    //     .table_name = "bank",
-    //     .columns = {{"id", "NUMBER"}, {"user_id", "NUMBER"}, {"amount", "DOUBLE"}, {"name", "VARCHAR2"}},
-    //     .num_columns = 4};
+// // CREATE TABLE bank(NUMBER id, Number user_id, DOUBLE amount, VARCHAR2 user_name)
+// TableSchema table3 = {
+//     .table_name = "bank",
+//     .columns = {{"id", "NUMBER"}, {"user_id", "NUMBER"}, {"amount", "DOUBLE"}, {"name", "VARCHAR2"}},
+//     .num_columns = 4};
 
-    // if (add_table_to_catalog("db1", &catalog, table3) == -1)
-    // {
-    //     printf("Memory full - No more tables can be created");
-    //     return -1;
-    // }
-    // printf("Table added\n");
+// if (add_table_to_catalog("db1", &catalog, table3) == -1)
+// {
+//     printf("Memory full - No more tables can be created");
+//     return -1;
+// }
+// printf("Table added\n");
 
-    // if (add_table_to_catalog("db1", &catalog, table3) == -1)
-    // {
-    //     printf("Memory full - No more tables can be created");
-    //     return -1;
-    // }
-    // printf("Table added\n");
+// if (add_table_to_catalog("db1", &catalog, table3) == -1)
+// {
+//     printf("Memory full - No more tables can be created");
+//     return -1;
+// }
+// printf("Table added\n");
 
-    // if (add_table_to_catalog("db1", &catalog, table3) == -1)
-    // {
-    //     printf("Memory full - No more tables can be created");
-    //     return -1;
-    // }
-    // printf("Table added\n");
+// if (add_table_to_catalog("db1", &catalog, table3) == -1)
+// {
+//     printf("Memory full - No more tables can be created");
+//     return -1;
+// }
+// printf("Table added\n");
 
-    TableSchema *found_table = find_table_in_catalog(&catalog, "user");
-    if (found_table != NULL)
-    {
-        printf("Found: %s\n", found_table->table_name);
-    }
-    else
-    {
-        printf("Table not found\n");
-    }
+// TableSchema *found_table = find_table_in_catalog(&catalog, "user");
+// if (found_table != NULL)
+// {
+//     printf("Found: %s\n", found_table->table_name);
+// }
+// else
+// {
+//     printf("Table not found\n");
+// }
 
-    // else
-    // {
-    //     // table successfully added to the catalog in memory. Not permanent.
-    //     if (append_table_catalog_in_disk("schema1", table1 != 1)
-    //     {
-    //         printf("Error storing table to memory");
-    //         return -1;
-    //     }
-    //     printf("Table Schema updated in memory");
-    // }
+// else
+// {
+//     // table successfully added to the catalog in memory. Not permanent.
+//     if (append_table_catalog_in_disk("schema1", table1 != 1)
+//     {
+//         printf("Error storing table to memory");
+//         return -1;
+//     }
+//     printf("Table Schema updated in memory");
+// }
 
-    // // CREATE TABLE transactions(NUMBER id, DOUBLE amount)
-    // TableSchema table2 = {
-    //     .table_name = "transaction",
-    //     .columns = {{"id", "NUMBER"}, {"amount", "DOUBLE"}},
-    //     .num_columns = 2};
+// // CREATE TABLE transactions(NUMBER id, DOUBLE amount)
+// TableSchema table2 = {
+//     .table_name = "transaction",
+//     .columns = {{"id", "NUMBER"}, {"amount", "DOUBLE"}},
+//     .num_columns = 2};
 
-    // if (add_table_to_catalog(schema1, &num_of_tables, table2) == -1)
-    // {
-    //     printf("Memory full - No more tables can be created");
-    //     return -1;
-    // }
-    // else
-    // {
-    //     // table successfully added to the catalog in memory. Not permanent.
-    //     if (append_table_catalog_in_disk("schema1", table2) != 1)
-    //     {
-    //         printf("Error storing table to memory");
-    //         return -1;
-    //     }
-    //     printf("Table Schema updated in memory");
-    // }
+// if (add_table_to_catalog(schema1, &num_of_tables, table2) == -1)
+// {
+//     printf("Memory full - No more tables can be created");
+//     return -1;
+// }
+// else
+// {
+//     // table successfully added to the catalog in memory. Not permanent.
+//     if (append_table_catalog_in_disk("schema1", table2) != 1)
+//     {
+//         printf("Error storing table to memory");
+//         return -1;
+//     }
+//     printf("Table Schema updated in memory");
+// }
 
-    // CREATE TABLE bank(NUMBER id, Number user_id, DOUBLE amount, VARCHAR2 user_name)
-    // TableSchema table3 = {
-    //     .table_name = "bank",
-    //     .columns = {{"id", "NUMBER"}, {"user_id", "NUMBER"}, {"amount", "DOUBLE"}, {"name", "VARCHAR2"}},
-    //     .num_columns = 4};
+// CREATE TABLE bank(NUMBER id, Number user_id, DOUBLE amount, VARCHAR2 user_name)
+// TableSchema table3 = {
+//     .table_name = "bank",
+//     .columns = {{"id", "NUMBER"}, {"user_id", "NUMBER"}, {"amount", "DOUBLE"}, {"name", "VARCHAR2"}},
+//     .num_columns = 4};
 
-    // if (add_table_to_catalog(schema1, &num_of_tables, table3) == -1)
-    // {
-    //     printf("Memory full - No more tables can be created");
-    //     return -1;
-    // }
+// if (add_table_to_catalog(schema1, &num_of_tables, table3) == -1)
+// {
+//     printf("Memory full - No more tables can be created");
+//     return -1;
+// }
 
-    // if (write_catalog_to_disk("schema1", schema1, num_of_tables) == num_of_tables)
-    // {
-    //     printf("Success\n");
-    // }
-    // else
-    // {
-    //     printf("Fail\n");
-    // }
+// if (write_catalog_to_disk("schema1", schema1, num_of_tables) == num_of_tables)
+// {
+//     printf("Success\n");
+// }
+// else
+// {
+//     printf("Fail\n");
+// }
 
-    // free(schema1);
+// free(schema1);
 
-    //     TableSchema *schema1 = load_catalog_from_disk("schema1", &num_of_tables);
-    //     if (schema1 != NULL)
-    //     {
-    //         // hssql > CREATE TABLE user(NUMBER id, VARCHAR2 name)
-    //         TableSchema table1 = {
-    //             .table_name = "user",
-    //             .columns = {
-    //                 {.col_name = "id", .col_type = "NUMBER"},
-    //                 {.col_name = "name", .col_type = "VARCHAR2"}},
-    //             .num_columns = 2};
+//     TableSchema *schema1 = load_catalog_from_disk("schema1", &num_of_tables);
+//     if (schema1 != NULL)
+//     {
+//         // hssql > CREATE TABLE user(NUMBER id, VARCHAR2 name)
+//         TableSchema table1 = {
+//             .table_name = "user",
+//             .columns = {
+//                 {.col_name = "id", .col_type = "NUMBER"},
+//                 {.col_name = "name", .col_type = "VARCHAR2"}},
+//             .num_columns = 2};
 
-    //         if (add_table_to_catalog(schema1, &num_of_tables, table1) == -1)
-    //         {
-    //             printf("Memory full - No more tables can be created");
-    //             return -1;
-    //         }
-    //         printf("Table added to catalog in memory\n");
+//         if (add_table_to_catalog(schema1, &num_of_tables, table1) == -1)
+//         {
+//             printf("Memory full - No more tables can be created");
+//             return -1;
+//         }
+//         printf("Table added to catalog in memory\n");
 
-    //         // table successfully added to the catalog in memory. Not permanent.
-    //         if (append_table_catalog_in_disk("schema1", &table1) == -1)
-    //         {
-    //             printf("Error storing table to memory");
-    //             return -1;
-    //         }
-    //         printf("Table Schema updated in memory");
-    //     }
-    //     free(schema1);
+//         // table successfully added to the catalog in memory. Not permanent.
+//         if (append_table_catalog_in_disk("schema1", &table1) == -1)
+//         {
+//             printf("Error storing table to memory");
+//             return -1;
+//         }
+//         printf("Table Schema updated in memory");
+//     }
+//     free(schema1);
 
-    return 0;
-}
+//     return 0;
+// }
