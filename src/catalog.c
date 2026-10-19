@@ -54,28 +54,6 @@ TableSchema *load_catalog_from_disk(char *database_name, Catalog *catalog)
     return ptr;
 }
 
-int append_table_catalog_in_disk(char *database_name, TableSchema *object)
-{
-    char file_path[512];
-
-    int bytes_written = snprintf(file_path, sizeof(file_path), "data/db/%s/catalog.dat", database_name);
-    if (bytes_written < 0 || bytes_written >= sizeof(file_path))
-    {
-        printf("Error: File path exceeds max buffer length.\n");
-        return -1;
-    }
-
-    FILE *fp = fopen(file_path, "ab");
-    if (fp == NULL)
-    {
-        printf("Failed to open catalog file '%s'\n", file_path);
-        return -1;
-    }
-    size_t written = fwrite(object, sizeof(TableSchema), 1, fp);
-    fclose(fp);
-    return written;
-}
-
 int write_catalog_to_disk(char *database_name, TableSchema *object, size_t size)
 {
     // for cleanup - Incase database gets corrupted. This function is called for re-creating the catalog
