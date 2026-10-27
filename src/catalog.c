@@ -5,12 +5,12 @@
 #include "parser.h"
 #include "catalog.h"
 
-typedef struct Catalog
-{
-    int num_of_tables;
-    int max_capacity;
-    TableSchema *table_list;
-} Catalog;
+// typedef struct Catalog
+// {
+//     int num_of_tables;
+//     int max_capacity;
+//     TableSchema *table_list;
+// } Catalog;
 
 static int build_catalog_path(char *buf, size_t size, const char *database_name)
 {
@@ -61,12 +61,12 @@ TableSchema *load_catalog_from_disk(char *database_name, Catalog *catalog)
 
     char path[512];
     if (build_catalog_path(path, sizeof(path), database_name) == -1)
-        return -1;
+        return NULL;
 
     FILE *fp = fopen(path, "rb");
     if (fp == NULL)
     {
-        return -1;
+        return NULL;
     }
 
     fseek(fp, 0, SEEK_END);
@@ -83,14 +83,14 @@ TableSchema *load_catalog_from_disk(char *database_name, Catalog *catalog)
     if (ptr == NULL)
     {
         fclose(fp);
-        return -1;
+        return NULL;
     }
 
     if (count > 0 && fread(ptr, sizeof(TableSchema), count, fp) != count)
     {
         free(ptr);
         fclose(fp);
-        return -1;
+        return NULL;
     }
     fclose(fp);
 
@@ -123,13 +123,11 @@ int write_catalog_to_disk(char *database_name, TableSchema *object, size_t size)
 int add_table_to_catalog(char *database_name, Catalog *catalog, TableSchema new_table)
 {
     char file_path[512];
-
-    int bytes_written = snprintf(file_path, sizeof(file_path), "data/%s/catalog.dat", database_name);
-    if (bytes_written < 0 || bytes_written >= sizeof(file_path))
+    if (build_catalog_path(file_path, sizeof(file_path), database_name) == -1)
     {
-        printf("Error: File path exceeds max buffer length.\n");
         return -1;
     }
+
     if (catalog->num_of_tables == catalog->max_capacity)
     {
         // extend the in-memory catalog
@@ -145,9 +143,6 @@ int add_table_to_catalog(char *database_name, Catalog *catalog, TableSchema new_
         ptr = NULL;
     }
 
-    catalog->table_list[catalog->num_of_tables] = new_table;
-    catalog->num_of_tables++;
-
     FILE *fp = fopen(file_path, "ab");
     if (fp == NULL)
     {
@@ -156,6 +151,8 @@ int add_table_to_catalog(char *database_name, Catalog *catalog, TableSchema new_
     }
 
     size_t written = fwrite(&new_table, sizeof(TableSchema), 1, fp);
+    catalog->table_list[catalog->num_of_tables] = new_table;
+    catalog->num_of_tables++;
     fclose(fp);
     return written;
 }
@@ -181,16 +178,16 @@ TableSchema *find_table_in_catalog(Catalog *catalog, char *table_name)
 //     // user connects to a database.
 //     // that specific database catalog loaded.
 
-//     TableSchema *ptr = load_catalog_from_disk("db2", &catalog);
-//     if (ptr == NULL)
+// TableSchema *ptr = load_catalog_from_disk("db3", &catalog);
+// if (ptr == NULL)
+// {
+//     if (create_catalog("db3") == 1)
 //     {
-//         if (create_catalog("db2") == 1)
-//         {
-//             printf("File created successfully\n");
-//         }
+//         printf("File created successfully\n");
 //     }
-//     catalog.table_list = ptr;
-//     ptr = NULL;
+// }
+// catalog.table_list = ptr;
+// ptr = NULL;
 
 //     // hssql>CREATE TABLE user(NUMBER id, VARCHAR2 name)
 //     TableSchema table1 = {
