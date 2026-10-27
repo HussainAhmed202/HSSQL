@@ -1,6 +1,8 @@
 #ifndef CATALOG_H
 #define CATALOG_H
 
+#define CATALOG_INITIAL_CAPACITY 5
+
 typedef struct Catalog
 {
     int num_of_tables;
@@ -12,6 +14,11 @@ typedef struct Catalog
 TableSchema *load_catalog_from_disk(
     char *database_name,
     Catalog *catalog);
+
+/*
+    Called when a new database is created. This procedure will create the catalog file
+*/
+int create_catalog(const char *database_name);
 
 /* Write the entire catalog to disk */
 int write_catalog_to_disk(
