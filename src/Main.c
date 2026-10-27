@@ -21,11 +21,21 @@ int main(void)
     // user connects to a database.
     // that specific database catalog loaded.
 
-    catalog.table_list = load_catalog_from_disk("db1", &catalog);
-    // if (ptr == NULL)
-    // {
-    //     printf("Catalog file is empty\n");
-    // }
+    TableSchema *ptr = load_catalog_from_disk("db1", &catalog);
+    if (ptr == NULL)
+    {
+        if (create_catalog("db1") == 1)
+        {
+            printf("File created successfully\n");
+        }
+        else
+        {
+            printf("Catalog file could not be created\n");
+            return 0;
+        }
+    }
+    catalog.table_list = ptr;
+    ptr = NULL;
 
     welcome_msg();
 
